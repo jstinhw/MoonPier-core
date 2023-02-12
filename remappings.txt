@@ -1,0 +1,7 @@
+forge-std/=lib/forge-std/src/
+solmate/=lib/solmate/src/
+ds-test/=lib/ds-test/src/
+openzeppelin-contracts/=lib/openzeppelin-contracts/
+openzeppelin-upgradeable/=lib/openzeppelin-contracts-upgradeable/
+@rari-capital/solmate=lib/solmate/
+erc721a-upgradeable/=lib/ERC721A-Upgradeable/contracts/

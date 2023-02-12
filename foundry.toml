@@ -1,0 +1,19 @@
+[profile.default]
+solc = '0.8.17'
+src = 'contracts'
+out = 'out'
+libs = ['lib', "node_modules"]
+test = 'test/foundry'
+# remappings = [
+#   'openzeppelin-contracts/=lib/openzeppelin-contracts/'
+# ]
+
+[profile.test]
+src = 'test/foundry'
+
+[fmt]
+line_length = 80
+tab_width = 4
+bracket_spacing = true
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
