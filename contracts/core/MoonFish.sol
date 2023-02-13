@@ -47,6 +47,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     reserves[_reserve] = (
       DataTypes.ReserveData({downpaymentRate: _downpaymentRate, mToken: _mToken, id: reserveCount})
     );
+
     reservesList[reserveCount] = _reserve;
     reserveCount += 1;
   }
@@ -55,8 +56,13 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     JoinLogic.join(reserve, amount, id, to, reserves, collections);
   }
 
-  function leave(address reserve, uint256 amount, uint256 id, address to) external override nonReentrant {
-    JoinLogic.leave(reserve, amount, id, to, reserves, collections);
+  function leave(
+    address reserve,
+    uint256 amount,
+    uint256 id,
+    address to
+  ) external override nonReentrant returns (uint256) {
+    return JoinLogic.leave(reserve, amount, id, to, reserves, collections);
   }
 
   function premint(uint256 id, uint256 amount) external override nonReentrant {

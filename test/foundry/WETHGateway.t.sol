@@ -21,7 +21,7 @@ contract TestWETHGateway is Test {
 
   FeeManager feeManager;
   ERC721Presale erc721Presale;
-  
+
   MoonFish moonfishproxy;
   MoonFish moonfish;
   WETHGateway wethgateway;
@@ -44,7 +44,7 @@ contract TestWETHGateway is Test {
     moonfishproxy.setERC721Implementation(address(erc721Presale));
 
     mtoken = new MToken(address(weth), address(moonfishproxy));
-    
+
     moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
   }
@@ -52,8 +52,8 @@ contract TestWETHGateway is Test {
   function testjoinETH() public {
     uint256 id = 1;
     uint256 amount = 10 ether;
-    
-    uint premintedAmount = amount * (100 - downpaymentWETH) / 100;
+
+    uint256 premintedAmount = amount * (100 - downpaymentWETH) / 100;
 
     // join with id 1 and 100 eth
     vm.prank(joiner);
@@ -66,7 +66,7 @@ contract TestWETHGateway is Test {
     // join with id 1 and 100 eth
     uint256 id = 1;
     uint256 amount = 10 ether;
-    uint premintedAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 premintedAmount = amount * (100 - downpaymentWETH) / 100;
 
     vm.prank(joiner);
     wethgateway.joinETH{value: amount}(id);
@@ -74,16 +74,19 @@ contract TestWETHGateway is Test {
     // leave before creator create collection
     vm.prank(joiner);
     mtoken.setApprovalForAll(address(wethgateway), true);
+    uint256 ethBefore = address(joiner).balance;
     vm.prank(joiner);
     wethgateway.leaveETH(id, premintedAmount, joiner);
-    assertEq(weth.balanceOf(joiner), amount);
+    uint256 ethAfter = address(joiner).balance;
+
+    assertEq(ethAfter - ethBefore, amount);
     assertEq(mtoken.balanceOf(joiner, id), 0);
   }
 
   function testFailCreateCollection() public {
     uint256 id = 1;
     uint256 joinamount = 1 ether;
-    
+
     DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
       fundsReceiver: creator,
       maxSupply: 100,
@@ -100,11 +103,7 @@ contract TestWETHGateway is Test {
     });
     vm.prank(joiner);
     wethgateway.joinETH{value: joinamount}(id);
-    moonfish.createCollection(
-      id,
-      address(weth),
-      config
-    );
+    moonfish.createCollection(id, address(weth), config);
   }
 
   function testCreateCollection() public {
@@ -126,23 +125,19 @@ contract TestWETHGateway is Test {
       presaleAmountPerWallet: 1
     });
 
-    uint premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
+    uint256 premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
     uint256 downpayment = joinAmount - premintedAmount;
 
     vm.prank(joiner);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
-    moonfishproxy.createCollection(
-      id,
-      address(weth),
-      config
-    );
+    moonfishproxy.createCollection(id, address(weth), config);
     assertEq(mtoken.balanceOf(creator, id), downpayment);
   }
 
   function testJoinerLeaveAfterCollectionCreated() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
-    
+
     uint256 joinAmount = 1 ether;
 
     DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
@@ -160,29 +155,29 @@ contract TestWETHGateway is Test {
       presaleAmountPerWallet: 1
     });
 
-    uint premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
+    uint256 premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
 
     vm.prank(joiner);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
-    moonfishproxy.createCollection(
-      id,
-      address(weth),
-      config
-    );
+    moonfishproxy.createCollection(id, address(weth), config);
     vm.prank(joiner);
     mtoken.setApprovalForAll(address(wethgateway), true);
+
+    uint256 ethBefore = address(joiner).balance;
     vm.prank(joiner);
     wethgateway.leaveETH(id, premintedAmount, joiner);
-    assertEq(weth.balanceOf(joiner), premintedAmount);
+    uint256 ethAfter = address(joiner).balance;
+
+    assertEq(ethAfter - ethBefore, premintedAmount);
     assertEq(mtoken.balanceOf(joiner, id), 0);
   }
 
   function testPremint() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
-    
+
     uint256 joinAmount = 1 ether;
-    
+
     DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
       fundsReceiver: creator,
       maxSupply: 100,
@@ -201,11 +196,7 @@ contract TestWETHGateway is Test {
     vm.prank(joiner);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
-    moonfishproxy.createCollection(
-      id,
-      address(weth),
-      config
-    );
+    moonfishproxy.createCollection(id, address(weth), config);
     vm.prank(joiner);
     mtoken.setApprovalForAll(address(moonfishproxy), true);
     vm.prank(joiner);

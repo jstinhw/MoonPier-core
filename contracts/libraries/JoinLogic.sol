@@ -30,8 +30,8 @@ library JoinLogic {
 
     IERC20(reserve).transferFrom(address(this), mToken, amount);
 
-    uint premintedAmount = (amount * (100 - reserves[reserve].downpaymentRate)) / 100;
-    uint downpayment = amount - premintedAmount;
+    uint256 premintedAmount = (amount * (100 - reserves[reserve].downpaymentRate)) / 100;
+    uint256 downpayment = amount - premintedAmount;
 
     IMToken(mToken).mint(mToken, id, downpayment);
     IMToken(mToken).mint(to, id, premintedAmount);
@@ -46,11 +46,11 @@ library JoinLogic {
     address to,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
-  ) external {
+  ) external returns (uint256) {
     address mToken = reserves[reserve].mToken;
     require(mToken != address(0), "MoonFish: invalid reserve");
 
-    uint256 withdrawAmount = amount;
+    uint256 withdrawAmount = amount; // (amount * 100) / (100 - reserves[reserve].downpaymentRate);
     uint256 downpayment;
     if (collections[id].collection == address(0)) {
       withdrawAmount = (amount * 100) / (100 - reserves[reserve].downpaymentRate);
@@ -61,5 +61,6 @@ library JoinLogic {
     IMToken(mToken).burn(to, id, withdrawAmount);
 
     emit Leave(reserve, to, amount, id);
+    return withdrawAmount;
   }
 }

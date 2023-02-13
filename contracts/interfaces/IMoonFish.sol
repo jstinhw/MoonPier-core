@@ -46,8 +46,9 @@ interface IMoonFish {
    * @param amount The amount of underlying token
    * @param id ID of premint collection
    * @param to The address to send underlying token
+   * @return The amount of underlying token
    */
-  function leave(address reserve, uint256 amount, uint256 id, address to) external;
+  function leave(address reserve, uint256 amount, uint256 id, address to) external returns (uint256);
 
   /**
    * @dev Premint `amount` of collection

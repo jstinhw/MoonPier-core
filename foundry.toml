@@ -12,8 +12,8 @@ test = 'test/foundry'
 src = 'test/foundry'
 
 [fmt]
-line_length = 80
-tab_width = 4
-bracket_spacing = true
+line_length = 120
+tab_width = 2
+# bracket_spacing = true
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
