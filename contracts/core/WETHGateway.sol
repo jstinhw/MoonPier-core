@@ -10,6 +10,7 @@ import {IWETHGateway} from "../interfaces/IWETHGateway.sol";
 import {ERC1155Receiver} from "openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
 import {IERC165} from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 
 import "forge-std/console2.sol";
 
@@ -42,7 +43,16 @@ contract WETHGateway is IWETHGateway, ReentrancyGuard, ERC1155Holder {
     }
   }
 
-  function premint(uint256 id, uint256 amount) external override nonReentrant {}
+  function premint(uint256 id, uint256 amount) external override nonReentrant {
+    uint256 downpayment = MoonFish.getReserveData(address(WETH)).downpaymentRate;
+    uint256 price = (amount *
+      IERC721Presale(MoonFish.getCollectionData(id).collection).getPresalePrice() *
+      (100 - downpayment)) / 100;
+
+    IMToken mToken = IMToken(MoonFish.getReserveData(address(WETH)).mToken);
+    mToken.safeTransferFrom(msg.sender, address(this), id, price, "");
+    MoonFish.premint(id, amount, msg.sender);
+  }
 
   function supportsInterface(bytes4 interfaceId) public view override(ERC1155Receiver) returns (bool) {
     return super.supportsInterface(interfaceId);

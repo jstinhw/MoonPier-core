@@ -54,8 +54,9 @@ interface IMoonFish {
    * @dev Premint `amount` of collection
    * @param id ID of premint collection
    * @param amount The amount of preminted collection tokens
+   * @param to The address of token receiver
    */
-  function premint(uint256 id, uint256 amount) external;
+  function premint(uint256 id, uint256 amount, address to) external;
 
   /**
    * @dev Create collection by creator
@@ -66,4 +67,6 @@ interface IMoonFish {
   function createCollection(uint256 id, address reserve, DataTypes.CollectionConfig calldata config) external;
 
   function getReserveData(address underlying) external view returns (DataTypes.ReserveData memory);
+
+  function getCollectionData(uint256 id) external view returns (DataTypes.CollectionData memory);
 }

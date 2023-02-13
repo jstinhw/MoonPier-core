@@ -6,19 +6,22 @@ import "forge-std/console2.sol";
 import {MToken} from "../../contracts/core/MToken.sol";
 import {MoonFish} from "../../contracts/core/MoonFish.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
-import {WETH9Mocked} from "../../contracts/test/WETH9Mocked.sol";
+import {WETH9Mocked} from "../../contracts/mocks/WETH9Mocked.sol";
 import {Utils} from "./utils.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {FeeManager} from "../../contracts/core/FeeManager.sol";
 import {ERC721Presale} from "../../contracts/core/ERC721Presale.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {MoonFishProxy} from "../../contracts/core/MoonFishProxy.sol";
+import {MoonFishAddressProvider} from "../../contracts/core/MoonFishAddressProvider.sol";
 
 contract TestWETHGateway is Test {
   address joiner;
   address creator;
   uint256 constant downpaymentWETH = 10;
 
+  MoonFishAddressProvider moonFishAddressProvider;
+  MoonFishAddressProvider moonFishAddressProviderProxy;
   FeeManager feeManager;
   ERC721Presale erc721Presale;
 
@@ -35,13 +38,23 @@ contract TestWETHGateway is Test {
     joiner = addresses[0];
 
     weth = new WETH9Mocked();
-    moonfish = new MoonFish();
+
+    // deploy Address Provider
+    moonFishAddressProvider = new MoonFishAddressProvider(0);
+    moonFishAddressProviderProxy =
+      MoonFishAddressProvider(address(new MoonFishProxy(address(moonFishAddressProvider), "")));
+
+    MoonFishAddressProvider(address(moonFishAddressProviderProxy)).initialize();
+
+    feeManager = new FeeManager(1000, creator);
+    erc721Presale = new ERC721Presale(address(moonFishAddressProviderProxy));
+    moonfish = new MoonFish(address(erc721Presale));
+
     moonfishproxy = MoonFish(address(new MoonFishProxy(address(moonfish), "")));
     MoonFish(address(moonfishproxy)).initialize();
 
-    feeManager = new FeeManager(1000, creator);
-    erc721Presale = new ERC721Presale(address(moonfishproxy), address(feeManager));
-    moonfishproxy.setERC721Implementation(address(erc721Presale));
+    moonFishAddressProviderProxy.setMoonFish(address(moonfishproxy));
+    moonFishAddressProviderProxy.setFeeManager(address(feeManager));
 
     mtoken = new MToken(address(weth), address(moonfishproxy));
 
@@ -198,12 +211,12 @@ contract TestWETHGateway is Test {
     vm.prank(creator);
     moonfishproxy.createCollection(id, address(weth), config);
     vm.prank(joiner);
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(wethgateway), true);
     vm.prank(joiner);
-    moonfishproxy.premint(id, 1);
+    wethgateway.premint(id, 1);
     assertEq(mtoken.balanceOf(creator, id), joinAmount);
     assertEq(mtoken.balanceOf(joiner, id), 0);
-    assertEq(IERC721(moonfishproxy.getCollectiondata(id).collection).balanceOf(joiner), 1);
-    assertEq(IERC721(moonfishproxy.getCollectiondata(id).collection).ownerOf(0), joiner);
+    assertEq(IERC721(moonfishproxy.getCollectionData(id).collection).balanceOf(joiner), 1);
+    assertEq(IERC721(moonfishproxy.getCollectionData(id).collection).ownerOf(0), joiner);
   }
 }

@@ -64,6 +64,7 @@ library CollectionLogic {
   function premint(
     uint256 id,
     uint256 amount,
+    address to,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
   ) external {
@@ -76,6 +77,7 @@ library CollectionLogic {
     }
 
     uint256 premintPrice = ERC721Presale(collectiondata.collection).getPresalePrice();
+
     IMToken(mtoken).safeTransferFrom(
       msg.sender,
       id.tokenCreator(),
@@ -83,7 +85,7 @@ library CollectionLogic {
       ((premintPrice * (100 - downpaymentRate)) / 100) * amount,
       ""
     );
-    ERC721Presale(collectiondata.collection).presaleMint(msg.sender, amount);
+    ERC721Presale(collectiondata.collection).presaleMint(to, amount);
     collectiondata.premintedTotalSupply += amount;
   }
 

@@ -9,6 +9,7 @@ import {ReentrancyGuardUpgradeable} from "openzeppelin-upgradeable/contracts/sec
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/IERC2981Upgradeable.sol";
 
+import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
 import {IMoonFish} from "../interfaces/IMoonFish.sol";
 import {IFeeManager} from "../interfaces/IFeeManager.sol";
 import {PublicMulticall} from "../libraries/PublicMulticall.sol";
@@ -24,8 +25,9 @@ contract ERC721Presale is
   AccessControlUpgradeable,
   PublicMulticall
 {
-  IMoonFish internal immutable moonfish;
-  IFeeManager internal immutable feeManager;
+  // IMoonFish internal moonfish;
+  // IFeeManager internal immutable feeManager;
+  IMoonFishAddressProvider public immutable moonFishAddressProvider;
 
   mapping(address => uint256) public whitelistMintedAmount;
   mapping(address => uint256) public presaleMintedAmount;
@@ -35,9 +37,8 @@ contract ERC721Presale is
   bytes32 public merkleRoot;
   string public baseURI;
 
-  constructor(address _moonfish, address _feeManager) initializer {
-    moonfish = IMoonFish(_moonfish);
-    feeManager = IFeeManager(_feeManager);
+  constructor(address _moonFishaddressProvider) initializer {
+    moonFishAddressProvider = IMoonFishAddressProvider(_moonFishaddressProvider);
   }
 
   modifier onlyAdmin() {
@@ -48,7 +49,7 @@ contract ERC721Presale is
   }
 
   modifier onlyMoonFish() {
-    if (msg.sender != address(moonfish)) {
+    if (msg.sender != moonFishAddressProvider.getMoonFish()) {
       revert Errors.MoonFishOnly();
     }
     _;
@@ -171,7 +172,9 @@ contract ERC721Presale is
 
   function withdraw() external onlyAdmin {
     uint256 funds = address(this).balance;
-    (address payable feeRecipient, uint256 moonfishFee) = feeManager.getFees(address(this));
+    (address payable feeRecipient, uint256 moonfishFee) = IFeeManager(moonFishAddressProvider.getFeeManager()).getFees(
+      address(this)
+    );
     uint256 fee = (funds * moonfishFee) / 10000;
     (bool successFee, ) = feeRecipient.call{value: fee}("");
     if (!successFee) {

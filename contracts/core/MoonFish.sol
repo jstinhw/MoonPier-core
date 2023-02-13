@@ -22,14 +22,16 @@ import "forge-std/console2.sol";
 contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, OwnableUpgradeable {
   using TokenIdentifiers for uint256;
 
-  address public erc721implementation;
+  address public immutable erc721implementation;
   mapping(address => DataTypes.ReserveData) internal reserves;
   mapping(uint256 => DataTypes.CollectionData) internal collections;
 
   mapping(uint256 => address) reservesList;
   uint8 internal reserveCount;
 
-  constructor() {}
+  constructor(address _erc721presaleimpl) initializer {
+    erc721implementation = _erc721presaleimpl;
+  }
 
   function initialize() external initializer {
     __Ownable_init();
@@ -37,10 +39,6 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   }
 
   function _authorizeUpgrade(address _newImplementation) internal override onlyOwner {}
-
-  function setERC721Implementation(address _implementation) external onlyOwner {
-    erc721implementation = _implementation;
-  }
 
   function addReserve(address _reserve, uint256 _downpaymentRate, address _mToken) external onlyOwner {
     require(_downpaymentRate < 100);
@@ -65,8 +63,8 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     return JoinLogic.leave(reserve, amount, id, to, reserves, collections);
   }
 
-  function premint(uint256 id, uint256 amount) external override nonReentrant {
-    CollectionLogic.premint(id, amount, reserves, collections);
+  function premint(uint256 id, uint256 amount, address to) external override nonReentrant {
+    CollectionLogic.premint(id, amount, to, reserves, collections);
   }
 
   function createCollection(
@@ -81,7 +79,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     return reserves[underlying];
   }
 
-  function getCollectiondata(uint256 id) external view returns (DataTypes.CollectionData memory) {
+  function getCollectionData(uint256 id) external view returns (DataTypes.CollectionData memory) {
     return collections[id];
   }
 }
