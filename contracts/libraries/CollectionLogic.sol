@@ -20,7 +20,7 @@ library CollectionLogic {
   using TokenIdentifiers for uint256;
 
   modifier onlyCreator(uint256 id, address creator) {
-    require(_isCreator(id, creator));
+    require(_isCreator(id, creator), "Create: not creator");
     _;
   }
 
@@ -28,18 +28,20 @@ library CollectionLogic {
     address implementation,
     uint256 id,
     address reserve,
+    string memory name,
+    string memory symbol,
     DataTypes.CollectionConfig memory config,
     mapping(uint256 => DataTypes.CollectionData) storage collections,
     address mToken
   ) external onlyCreator(id, msg.sender) {
-    require(collections[id].collection == address(0));
+    require(collections[id].collection == address(0), "Create: collection exists");
 
     // TODO: deploy contract
     ERC721PresaleProxy deployed = new ERC721PresaleProxy(implementation, "");
     ERC721Presale(address(deployed)).initialize({
       _admin: msg.sender,
-      _name: "Test",
-      _symbol: "TEST",
+      _name: name,
+      _symbol: symbol,
       _collectionConfig: config
     });
 
@@ -55,6 +57,7 @@ library CollectionLogic {
 
     uint256 maxDownpayment = config.presaleMintPrice * config.presaleMaxSupply;
     uint256 allDownpayment = IMToken(mToken).balanceOf(mToken, id);
+
     if (maxDownpayment > allDownpayment) {
       maxDownpayment = allDownpayment;
     }
@@ -69,16 +72,19 @@ library CollectionLogic {
     mapping(uint256 => DataTypes.CollectionData) storage collections
   ) external {
     DataTypes.CollectionData storage collectiondata = collections[id];
-    uint256 downpaymentRate = reserves[collectiondata.reserve].downpaymentRate;
-    address mtoken = reserves[collectiondata.reserve].mToken;
-
     if (collectiondata.collection == address(0)) {
-      revert Errors.CollectionNotExist();
+      revert Errors.MoonFishCollectionNotExist();
     }
-
+    uint256 downpaymentRate = reserves[collectiondata.reserve].downpaymentRate;
+    IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
+    uint256 balance = mtoken.balanceOf(msg.sender, id);
     uint256 premintPrice = ERC721Presale(collectiondata.collection).getPresalePrice();
 
-    IMToken(mtoken).safeTransferFrom(
+    if (balance < ((premintPrice * (100 - downpaymentRate)) / 100) * amount) {
+      revert Errors.MoonFishPremintInsufficientBalance();
+    }
+
+    mtoken.safeTransferFrom(
       msg.sender,
       id.tokenCreator(),
       id,

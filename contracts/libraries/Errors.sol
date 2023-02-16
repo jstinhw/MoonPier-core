@@ -16,4 +16,9 @@ library Errors {
   error PresaleInvalidMint();
   error CollectionNotExist();
   error MoonFishOnly();
+  error GatewayLeaveInsufficientBalance();
+  error MoonFishLeaveInsufficientBalance();
+  error GatewayPremintInsufficientBalance();
+  error MoonFishPremintInsufficientBalance();
+  error MoonFishCollectionNotExist();
 }
