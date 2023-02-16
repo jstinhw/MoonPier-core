@@ -9,6 +9,7 @@ import {ReentrancyGuardUpgradeable} from "openzeppelin-upgradeable/contracts/sec
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/IERC2981Upgradeable.sol";
 
+import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
 import {IMoonFish} from "../interfaces/IMoonFish.sol";
 import {IFeeManager} from "../interfaces/IFeeManager.sol";
@@ -19,6 +20,7 @@ import {Errors} from "../libraries/Errors.sol";
 import "forge-std/console2.sol";
 
 contract ERC721Presale is
+  IERC721Presale,
   ERC721AUpgradeable,
   UUPSUpgradeable,
   ReentrancyGuardUpgradeable,
@@ -68,43 +70,12 @@ contract ERC721Presale is
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
     collectionConfig = _collectionConfig;
-
-    // if (_setConfigdata.length > 0) {
-    //   // Setup temporary role
-    //   _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    //   // Execute setupCalls
-    //   multicall(_setConfigdata);
-    //   // Remove temporary role
-    //   _revokeRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    // }
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
-  function setCollectionConfig(
-    uint256 _maxAmountPerAddress,
-    uint256 _publicMintPrice,
-    uint256 _publicStartTime,
-    uint256 _publicEndTime,
-    uint256 _whitelistMintPrice,
-    uint256 _whitelistStartTime,
-    uint256 _whitelistEndTime,
-    uint256 _presaleMintPrice,
-    uint256 _presaleAmountPerWallet
-  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    collectionConfig.maxAmountPerAddress = _maxAmountPerAddress;
-    collectionConfig.publicMintPrice = _publicMintPrice;
-    collectionConfig.publicStartTime = _publicStartTime;
-    collectionConfig.publicEndTime = _publicEndTime;
-    collectionConfig.whitelistMintPrice = _whitelistMintPrice;
-    collectionConfig.whitelistStartTime = _whitelistStartTime;
-    collectionConfig.whitelistEndTime = _whitelistEndTime;
-    collectionConfig.presaleMintPrice = _presaleMintPrice;
-    collectionConfig.presaleAmountPerWallet = _presaleAmountPerWallet;
-  }
-
-  function setMerkleRoot(bytes32 _merkleRoot) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    merkleRoot = _merkleRoot;
+  function setCollectionConfig(DataTypes.CollectionConfig calldata _config) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    collectionConfig = _config;
   }
 
   function mint(uint256 amount) external {
@@ -194,8 +165,24 @@ contract ERC721Presale is
     return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, _toString(tokenId))) : "";
   }
 
+  function setMerkleRoot(bytes32 _merkleRoot) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    merkleRoot = _merkleRoot;
+  }
+
   function setBaseURI(string memory _baseURI) public onlyAdmin {
     baseURI = _baseURI;
+  }
+
+  function getConfig() external view returns (DataTypes.CollectionConfig memory) {
+    return collectionConfig;
+  }
+
+  function getWhitelistPrice() external view returns (uint256) {
+    return collectionConfig.whitelistMintPrice;
+  }
+
+  function getPresalePrice() external view returns (uint256) {
+    return collectionConfig.presaleMintPrice;
   }
 
   function supportsInterface(
@@ -211,9 +198,5 @@ contract ERC721Presale is
     returns (bool)
   {
     return super.supportsInterface(interfaceId);
-  }
-
-  function getPresalePrice() external view returns (uint256) {
-    return collectionConfig.presaleMintPrice;
   }
 }

@@ -26,7 +26,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   mapping(address => DataTypes.ReserveData) internal reserves;
   mapping(uint256 => DataTypes.CollectionData) internal collections;
 
-  mapping(uint256 => address) reservesList;
+  mapping(uint256 => address) internal reservesList;
   uint8 internal reserveCount;
 
   constructor(address _erc721presaleimpl) initializer {
@@ -41,7 +41,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   function _authorizeUpgrade(address _newImplementation) internal override onlyOwner {}
 
   function addReserve(address _reserve, uint256 _downpaymentRate, address _mToken) external onlyOwner {
-    require(_downpaymentRate < 100);
+    require(_downpaymentRate < 100, "downpayment should be less than 100");
     reserves[_reserve] = (
       DataTypes.ReserveData({downpaymentRate: _downpaymentRate, mToken: _mToken, id: reserveCount})
     );
@@ -50,17 +50,17 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     reserveCount += 1;
   }
 
-  function join(address reserve, uint256 amount, uint256 id, address to) external override nonReentrant {
-    JoinLogic.join(reserve, amount, id, to, reserves, collections);
+  function join(address reserve, uint256 id, uint256 amount, address to) external override nonReentrant {
+    JoinLogic.join(reserve, id, amount, to, reserves, collections);
   }
 
   function leave(
     address reserve,
-    uint256 amount,
     uint256 id,
+    uint256 amount,
     address to
   ) external override nonReentrant returns (uint256) {
-    return JoinLogic.leave(reserve, amount, id, to, reserves, collections);
+    return JoinLogic.leave(reserve, id, amount, to, reserves, collections);
   }
 
   function premint(uint256 id, uint256 amount, address to) external override nonReentrant {
@@ -70,9 +70,20 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   function createCollection(
     uint256 _id,
     address _reserve,
+    string memory _name,
+    string memory _symbol,
     DataTypes.CollectionConfig calldata _config
   ) external override nonReentrant {
-    CollectionLogic.create(erc721implementation, _id, _reserve, _config, collections, reserves[_reserve].mToken);
+    CollectionLogic.create(
+      erc721implementation,
+      _id,
+      _reserve,
+      _name,
+      _symbol,
+      _config,
+      collections,
+      reserves[_reserve].mToken
+    );
   }
 
   function getReserveData(address underlying) external view returns (DataTypes.ReserveData memory) {

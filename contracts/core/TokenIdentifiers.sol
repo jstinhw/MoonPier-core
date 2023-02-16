@@ -9,9 +9,7 @@ import "openzeppelin-contracts/contracts/utils/Strings.sol";
   Token ids are a concatenation of:
  * creator: hex address of the creator of the token. 160 bits
  * index: Index for this token (the regular ID), up to 2^56 - 1. 56 bits
- * supply: Supply cap for this token, up to 2^40 - 1 (1 trillion).  40 bits
-
-*/
+ * supply: Supply cap for this token, up to 2^40 - 1 (1 trillion).  40 bits*/
 /**
  * @title TokenIdentifiers
  * support for authentication and metadata for token ids

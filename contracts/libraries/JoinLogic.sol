@@ -5,12 +5,15 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {IMToken} from "../interfaces/IMToken.sol";
+import {Errors} from "../libraries/Errors.sol";
+import "forge-std/console2.sol";
 
 /**
  * @title JoinLogic library
  * @author MoonPier
  * @notice JoinLogic library contains the logic for joining a collection
  */
+
 library JoinLogic {
   event Join(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
 
@@ -18,15 +21,15 @@ library JoinLogic {
 
   function join(
     address reserve,
-    uint256 amount,
     uint256 id,
+    uint256 amount,
     address to,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
   ) external {
     address mToken = reserves[reserve].mToken;
-    require(collections[id].collection == address(0));
-    require(mToken != address(0), "MoonFish: invalid reserve");
+    require(collections[id].collection == address(0), "Join: collection exists");
+    require(mToken != address(0), "Join: invalid reserve");
 
     IERC20(reserve).transferFrom(address(this), mToken, amount);
 
@@ -41,20 +44,27 @@ library JoinLogic {
 
   function leave(
     address reserve,
-    uint256 amount,
     uint256 id,
+    uint256 amount,
     address to,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
   ) external returns (uint256) {
     address mToken = reserves[reserve].mToken;
-    require(mToken != address(0), "MoonFish: invalid reserve");
+    require(mToken != address(0), "Leave: invalid reserve");
+    require(amount != 0, "Leave: amount cannot be zero");
 
-    uint256 withdrawAmount = amount; // (amount * 100) / (100 - reserves[reserve].downpaymentRate);
-    uint256 downpayment;
+    uint256 downpayment = (amount * reserves[reserve].downpaymentRate) / (100 - reserves[reserve].downpaymentRate);
+    uint256 withdrawAmount = amount;
+
+    uint256 balance = IMToken(mToken).balanceOf(to, id);
+
+    if (balance < withdrawAmount) {
+      revert Errors.MoonFishLeaveInsufficientBalance();
+    }
+
     if (collections[id].collection == address(0)) {
-      withdrawAmount = (amount * 100) / (100 - reserves[reserve].downpaymentRate);
-      downpayment = withdrawAmount - amount;
+      withdrawAmount = amount + downpayment;
       IMToken(mToken).safeTransferFrom(mToken, to, id, downpayment, "");
     }
 
