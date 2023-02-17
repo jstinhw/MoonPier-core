@@ -21,7 +21,7 @@ contract LeaveTest is BaseSetup {
     // join with id 1 and 10 eth
     uint256 id = 1;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
@@ -41,7 +41,7 @@ contract LeaveTest is BaseSetup {
     vm.assume(amount > 1 ether && amount < 100 ether);
     // join with id 1 and 10 eth
     uint256 id = 1;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
@@ -61,7 +61,7 @@ contract LeaveTest is BaseSetup {
     // join with id 1 and 10 eth
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
     uint256 downpayment = amount - mTokenAmount;
 
     vm.prank(alice);
@@ -77,7 +77,6 @@ contract LeaveTest is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -102,7 +101,7 @@ contract LeaveTest is BaseSetup {
   function testCannotLeaveWithZeroAmount() public {
     uint256 id = 1;
     uint256 amount = 0 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
@@ -113,7 +112,7 @@ contract LeaveTest is BaseSetup {
   function testCannotLeaveBeforeJoin() public {
     uint256 id = 1;
     uint256 amount = 1 ether;
-    uint256 downpayment = amount * downpaymentWETH / 100;
+    uint256 downpayment = (amount * downpaymentWETH) / 100;
     uint256 mTokenAmount = amount - downpayment;
     // uint256 premintedAmount = amount * (100 - downpaymentWETH) / 100;
 
@@ -126,7 +125,7 @@ contract LeaveTest is BaseSetup {
   function testCannotLeaveInvalidAmount() public {
     uint256 id = 1;
     uint256 amount = 1 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
@@ -138,7 +137,7 @@ contract LeaveTest is BaseSetup {
   function testCannotLeaveByOther() public {
     uint256 id = 1;
     uint256 amount = 0 ether;
-    uint256 downpayment = amount * downpaymentWETH / 100;
+    uint256 downpayment = (amount * downpaymentWETH) / 100;
     uint256 mTokenAmount = amount - downpayment;
 
     vm.startPrank(alice);

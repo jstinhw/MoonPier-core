@@ -27,7 +27,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -55,7 +54,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -79,7 +77,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -103,7 +100,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -121,7 +117,7 @@ contract Create is BaseSetup {
   function testCreateCollectionDownPayment() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
     uint256 joinAmount = 1 ether;
-    uint256 premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
+    uint256 premintedAmount = (joinAmount * (100 - downpaymentWETH)) / 100;
     uint256 downpayment = joinAmount - premintedAmount;
 
     string memory name = "name";
@@ -133,7 +129,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
@@ -152,7 +147,7 @@ contract Create is BaseSetup {
   function testCreateCollectionDownPaymentFuzz(uint256 joinAmount) public {
     vm.assume(joinAmount > 0 && joinAmount < 100 ether);
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
-    uint256 premintedAmount = joinAmount * (100 - downpaymentWETH) / 100;
+    uint256 premintedAmount = (joinAmount * (100 - downpaymentWETH)) / 100;
     uint256 downpayment = joinAmount - premintedAmount;
 
     string memory name = "name";
@@ -164,7 +159,6 @@ contract Create is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,

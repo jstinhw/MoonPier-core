@@ -22,7 +22,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
   }
 
   modifier onlyMoonFish() {
-    require(_msgSender() == moonfish);
+    require(_msgSender() == moonfish, "MToken: not from moonfish");
     _;
   }
 

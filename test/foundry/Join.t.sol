@@ -19,7 +19,7 @@ contract JoinTest is BaseSetup {
   function testjoinETH() public {
     uint256 id = 1;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     // join with id 1 and 10 eth
     vm.prank(alice);
@@ -31,7 +31,7 @@ contract JoinTest is BaseSetup {
   function testjoinETHFuzz(uint96 amount) public {
     vm.assume(amount > 0 && amount < 100 ether);
     uint256 id = 1;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     // join with id 1 and amount eth
     vm.prank(alice);
@@ -43,7 +43,7 @@ contract JoinTest is BaseSetup {
   function testJoinETHThroughMoonFish() public {
     uint256 id = 1;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     // join with id 1 and 10 eth
     vm.startPrank(alice);
@@ -57,7 +57,7 @@ contract JoinTest is BaseSetup {
   function testjoinETHWithZeroAmount() public {
     uint256 id = 1;
     uint256 amount = 0 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     // join with id 1 and 0 eth
     vm.prank(alice);
@@ -69,7 +69,7 @@ contract JoinTest is BaseSetup {
   function testFailJoinETHWithWrongAmount() public {
     uint256 id = 1;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = amount * (100 - downpaymentWETH) / 100;
+    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
 
     // join with id 1 and 10 eth + 1 wei
     vm.startPrank(alice);
@@ -112,7 +112,6 @@ contract JoinTest is BaseSetup {
       publicMintPrice: 3 ether,
       publicStartTime: block.timestamp,
       publicEndTime: block.timestamp + 1000,
-      whitelistMintPrice: 2 ether,
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,

@@ -13,7 +13,6 @@ import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
 import {IMoonFish} from "../interfaces/IMoonFish.sol";
 import {IFeeManager} from "../interfaces/IFeeManager.sol";
-import {PublicMulticall} from "../libraries/PublicMulticall.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
 
@@ -24,8 +23,7 @@ contract ERC721Presale is
   ERC721AUpgradeable,
   UUPSUpgradeable,
   ReentrancyGuardUpgradeable,
-  AccessControlUpgradeable,
-  PublicMulticall
+  AccessControlUpgradeable
 {
   // IMoonFish internal moonfish;
   // IFeeManager internal immutable feeManager;
@@ -72,25 +70,27 @@ contract ERC721Presale is
     collectionConfig = _collectionConfig;
   }
 
-  function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
+  function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
 
-  function setCollectionConfig(DataTypes.CollectionConfig calldata _config) external onlyRole(DEFAULT_ADMIN_ROLE) {
+  function setCollectionConfig(DataTypes.CollectionConfig calldata _config) external onlyAdmin {
     collectionConfig = _config;
   }
 
-  function mint(uint256 amount) external {
+  function mint(uint256 amount) external payable {
     if (block.timestamp < collectionConfig.publicStartTime || block.timestamp > collectionConfig.publicEndTime) {
       revert Errors.PublicMintInvalidTime();
-    }
-
-    if (_totalMinted() + amount > collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
     }
     if (
       _numberMinted(_msgSender()) - whitelistMintedAmount[_msgSender()] - presaleMintedAmount[_msgSender()] + amount >
       collectionConfig.maxAmountPerAddress
     ) {
       revert Errors.PublicExceedMaxAMountPerAddress();
+    }
+    if (_totalMinted() + amount > collectionConfig.maxSupply) {
+      revert Errors.InsufficientSupply();
+    }
+    if (msg.value < collectionConfig.publicMintPrice * amount) {
+      revert Errors.InsufficientEth();
     }
     _mint(_msgSender(), amount);
   }
@@ -111,7 +111,7 @@ contract ERC721Presale is
       revert Errors.WhitelistInvalidProof();
     }
 
-    if (msg.value <= _pricePerToken * _amount) {
+    if (msg.value < _pricePerToken * _amount) {
       revert Errors.WhitelistInsufficientPrice();
     }
 
@@ -123,7 +123,7 @@ contract ERC721Presale is
       revert Errors.InsufficientSupply();
     }
     if (whitelistMintedAmount[_msgSender()] + _amount > _maxAmount) {
-      revert Errors.WhitelistExceedMaxAMountPerAddress();
+      revert Errors.WhitelistExceedAvailableAmount();
     }
     _mint(_msgSender(), _amount);
     whitelistMintedAmount[_msgSender()] = whitelistMintedAmount[_msgSender()] + _amount;
@@ -159,13 +159,13 @@ contract ERC721Presale is
   }
 
   function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    if (!_exists(tokenId)) {
-      revert IERC721AUpgradeable.URIQueryForNonexistentToken();
-    }
+    // if (!_exists(tokenId)) {
+    //   revert IERC721AUpgradeable.URIQueryForNonexistentToken();
+    // }
     return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, _toString(tokenId))) : "";
   }
 
-  function setMerkleRoot(bytes32 _merkleRoot) external onlyRole(DEFAULT_ADMIN_ROLE) {
+  function setMerkleRoot(bytes32 _merkleRoot) external onlyAdmin {
     merkleRoot = _merkleRoot;
   }
 
@@ -175,10 +175,6 @@ contract ERC721Presale is
 
   function getConfig() external view returns (DataTypes.CollectionConfig memory) {
     return collectionConfig;
-  }
-
-  function getWhitelistPrice() external view returns (uint256) {
-    return collectionConfig.whitelistMintPrice;
   }
 
   function getPresalePrice() external view returns (uint256) {

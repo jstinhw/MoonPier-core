@@ -86,6 +86,15 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     );
   }
 
+  function withdraw(
+    uint256 id,
+    uint256 amount,
+    address gateway,
+    address to
+  ) external override nonReentrant returns (uint256) {
+    return JoinLogic.withdraw(id, amount, gateway, to, reserves, collections);
+  }
+
   function getReserveData(address underlying) external view returns (DataTypes.ReserveData memory) {
     return reserves[underlying];
   }

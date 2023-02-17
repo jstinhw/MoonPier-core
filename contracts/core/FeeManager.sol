@@ -16,7 +16,7 @@ contract FeeManager is Ownable, IFeeManager {
   }
 
   function setFeeOverride(address _contract, uint256 _amount) external onlyOwner {
-    require(_amount < 2001, "Fee too high (not greater than 20%)");
+    require(_amount < 2001, "FeeManager: Fee too high");
     feeOverride[_contract] = _amount;
     emit FeeOverrideSet(_contract, _amount);
   }

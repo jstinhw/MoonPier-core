@@ -75,6 +75,15 @@ interface IMoonFish {
   ) external;
 
   /**
+   * @dev Withdraw reserve token
+   * @param id ID of the collection
+   * @param amount The amount of mToken to withdraw
+   * @param gateway The address of gateway
+   * @param to The address to send reserve token
+   */
+  function withdraw(uint256 id, uint256 amount, address gateway, address to) external returns (uint256);
+
+  /**
    * @dev Get reserve data
    * @param underlying The address of underlying token
    */

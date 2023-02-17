@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 import {DataTypes} from "../libraries/DataTypes.sol";
 
 interface IERC721Presale {
-  function mint(uint256 amount) external;
+  function mint(uint256 amount) external payable;
 
   function whitelistMint(
     bytes32[] calldata _proof,
@@ -24,8 +24,6 @@ interface IERC721Presale {
   function withdraw() external;
 
   function getConfig() external view returns (DataTypes.CollectionConfig memory);
-
-  function getWhitelistPrice() external view returns (uint256);
 
   function getPresalePrice() external view returns (uint256);
 }

@@ -31,7 +31,6 @@ library DataTypes {
     uint256 publicMintPrice;
     uint256 publicStartTime;
     uint256 publicEndTime;
-    uint256 whitelistMintPrice;
     uint256 whitelistStartTime;
     uint256 whitelistEndTime;
     uint256 presaleMaxSupply;

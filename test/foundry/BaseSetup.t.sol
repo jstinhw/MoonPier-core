@@ -19,6 +19,7 @@ contract BaseSetup is Test {
   address internal creator;
   address internal alice;
   address internal bob;
+  address internal cindy;
 
   ERC721Presale internal erc721Presale;
   FeeManager internal feeManager;
@@ -33,21 +34,23 @@ contract BaseSetup is Test {
 
   function setUp() public virtual {
     Utils utils = new Utils();
-    address[] memory addresses = utils.createUsers(3);
+    address[] memory addresses = utils.createUsers(4);
     admin = msg.sender;
     creator = addresses[0];
     alice = addresses[1];
     bob = addresses[2];
+    cindy = addresses[3];
     weth = new WETH9Mocked();
 
     // deploy Address Provider
     moonFishAddressProvider = new MoonFishAddressProvider(0);
-    moonFishAddressProviderProxy =
-      MoonFishAddressProvider(address(new MoonFishProxy(address(moonFishAddressProvider), "")));
+    moonFishAddressProviderProxy = MoonFishAddressProvider(
+      address(new MoonFishProxy(address(moonFishAddressProvider), ""))
+    );
 
     MoonFishAddressProvider(address(moonFishAddressProviderProxy)).initialize();
 
-    feeManager = new FeeManager(1000, creator);
+    feeManager = new FeeManager(1000, admin);
     erc721Presale = new ERC721Presale(address(moonFishAddressProviderProxy));
     moonfish = new MoonFish(address(erc721Presale));
     moonfishproxy = MoonFish(address(new MoonFishProxy(address(moonfish), "")));

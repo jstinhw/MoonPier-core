@@ -22,4 +22,11 @@ interface IWETHGateway {
    * @param amount The amount of preminted token
    */
   function premint(uint256 id, uint256 amount) external;
+
+  /**
+   * @dev withdraws ETH from the collection
+   * @param id ID of the collection
+   * @param amount The amount of withdraw value.
+   */
+  function withdraw(uint256 id, uint256 amount) external;
 }

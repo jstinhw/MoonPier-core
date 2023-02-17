@@ -7,7 +7,7 @@ library Errors {
   error InsufficientSupply();
   error PublicExceedMaxAMountPerAddress();
   error WhitelistMintInvalidTime();
-  error WhitelistExceedMaxAMountPerAddress();
+  error WhitelistExceedAvailableAmount();
   error WhitelistInvalidProof();
   error WhitelistInsufficientPrice();
   error TransferFeeFailed();
@@ -21,4 +21,7 @@ library Errors {
   error GatewayPremintInsufficientBalance();
   error MoonFishPremintInsufficientBalance();
   error MoonFishCollectionNotExist();
+  error MoonFishWithdrawInsufficientBalance();
+  error GatewayWithdrawInsufficientBalance();
+  error InsufficientEth();
 }
