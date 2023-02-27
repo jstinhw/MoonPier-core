@@ -13,34 +13,42 @@ import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/util
 import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 import {Errors} from "../libraries/Errors.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
+import {TokenIdentifiers} from "./TokenIdentifiers.sol";
 import "forge-std/console2.sol";
 
+/**
+ * @title WETHGateway contract
+ * @author MoonPier
+ * @notice WETHGateway is a contract that allows users to join and leave moonfish collections using ETH
+ */
 contract WETHGateway is IWETHGateway, ReentrancyGuard, ERC1155Holder {
-  IWETH internal WETH;
-  IMoonFish internal MoonFish;
+  using TokenIdentifiers for uint256;
 
-  constructor(address _underlying, address _moonFish) {
-    WETH = IWETH(_underlying);
-    MoonFish = IMoonFish(_moonFish);
-    IMToken mToken = IMToken(MoonFish.getReserveData(address(WETH)).mToken);
-    mToken.setApprovalForAll(address(MoonFish), true);
+  IWETH internal immutable WETH;
+  IMoonFish internal immutable _moonFish;
+
+  constructor(address underlying, address moonFish) {
+    WETH = IWETH(underlying);
+    _moonFish = IMoonFish(moonFish);
+    IMToken mToken = IMToken(_moonFish.getReserveData(address(WETH)).mToken);
+    mToken.setApprovalForAll(address(_moonFish), true);
   }
 
   function joinETH(uint256 id) external payable override nonReentrant {
     WETH.deposit{value: msg.value}();
-    WETH.transferFrom(address(this), address(MoonFish), msg.value);
-    MoonFish.join(address(WETH), id, msg.value, msg.sender);
+    WETH.transferFrom(address(this), address(_moonFish), msg.value);
+    _moonFish.join(address(WETH), id, msg.value, msg.sender);
   }
 
   function leaveETH(uint256 id, uint256 amount, address to) external override nonReentrant {
-    IMToken mToken = IMToken(MoonFish.getReserveData(address(WETH)).mToken);
+    IMToken mToken = IMToken(_moonFish.getReserveData(address(WETH)).mToken);
     uint256 balance = mToken.balanceOf(msg.sender, id);
 
     if (balance < amount) {
       revert Errors.GatewayLeaveInsufficientBalance();
     }
     mToken.safeTransferFrom(msg.sender, address(this), id, amount, "");
-    uint256 withdrawAmount = MoonFish.leave(address(WETH), id, amount, address(this));
+    uint256 withdrawAmount = _moonFish.leave(address(WETH), id, amount, address(this));
     WETH.withdraw(withdrawAmount);
 
     (bool success, ) = to.call{value: withdrawAmount}("");
@@ -50,33 +58,30 @@ contract WETHGateway is IWETHGateway, ReentrancyGuard, ERC1155Holder {
   }
 
   function premint(uint256 id, uint256 amount) external override nonReentrant {
-    DataTypes.CollectionData memory collectionData = MoonFish.getCollectionData(id);
+    DataTypes.CollectionData memory collectionData = _moonFish.getCollectionData(id);
     if (collectionData.collection == address(0)) {
       revert Errors.CollectionNotExist();
     }
-    uint256 downpayment = MoonFish.getReserveData(address(WETH)).downpaymentRate;
-    uint256 price = (amount *
-      IERC721Presale(MoonFish.getCollectionData(id).collection).getPresalePrice() *
-      (100 - downpayment)) / 100;
+    uint256 downpayment = id.tokenDownpayment();
+    uint256 price = (amount * collectionData.presalePrice * (10000 - downpayment)) / 10000;
 
-    IMToken mToken = IMToken(MoonFish.getReserveData(address(WETH)).mToken);
+    IMToken mToken = IMToken(_moonFish.getReserveData(address(WETH)).mToken);
     uint balance = mToken.balanceOf(msg.sender, id);
     if (balance < price) {
       revert Errors.GatewayPremintInsufficientBalance();
     }
     mToken.safeTransferFrom(msg.sender, address(this), id, price, "");
-    MoonFish.premint(id, amount, msg.sender);
+    _moonFish.premint(id, amount, msg.sender);
   }
 
   function withdraw(uint256 id, uint256 amount) external override nonReentrant {
-    IMToken mToken = IMToken(MoonFish.getReserveData(address(WETH)).mToken);
+    IMToken mToken = IMToken(_moonFish.getReserveData(address(WETH)).mToken);
     uint256 balance = mToken.balanceOf(msg.sender, id);
-    console2.log("balance: %s amount: %s", balance, amount);
     if (balance < amount) {
       revert Errors.GatewayWithdrawInsufficientBalance();
     }
     mToken.safeTransferFrom(msg.sender, address(this), id, amount, "");
-    uint256 withdrawAmount = MoonFish.withdraw(id, amount, address(this), msg.sender);
+    uint256 withdrawAmount = _moonFish.withdraw(address(this), id, amount, msg.sender);
     WETH.withdraw(withdrawAmount);
 
     (bool success, ) = (msg.sender).call{value: withdrawAmount}("");

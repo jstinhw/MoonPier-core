@@ -3,22 +3,24 @@ pragma solidity 0.8.17;
 
 interface IMoonFishAddressProvider {
   /**
-   * @dev Set MoonFish address
+   * @notice Set MoonFish address
+   * @param moonFish MoonFish address
    */
-  function setMoonFish(address _moonFish) external;
+  function setMoonFish(address moonFish) external;
 
   /**
-   * @dev Set FeeManager address
+   * @notice Set FeeManager address
+   * @param feeManager FeeManager address
    */
-  function setFeeManager(address _feeManager) external;
+  function setFeeManager(address feeManager) external;
 
   /**
-   * @dev Get MoonFish address
+   * @notice Get MoonFish address
    */
   function getMoonFish() external view returns (address);
 
   /**
-   * @dev Get FeeManager address
+   * @notice Get FeeManager address
    */
   function getFeeManager() external view returns (address);
 }

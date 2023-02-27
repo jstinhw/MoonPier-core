@@ -13,22 +13,22 @@ import {Errors} from "../../contracts/libraries/Errors.sol";
 import {Utils} from "./utils.sol";
 
 contract ERC721PresaleTest is BaseSetup {
-  uint256 public downpaymentWETH = 10;
+  uint256 public downpaymentWETH = 1000;
   Utils private utils = new Utils();
 
   function setUp() public virtual override {
     BaseSetup.setUp();
-    moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
+    moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
   }
 
   function testPublicMint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -38,12 +38,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
@@ -53,12 +55,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotMintInsufficientETH() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -68,12 +70,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
@@ -82,12 +86,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotMintNotStarted() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -97,12 +101,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
@@ -111,12 +117,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotMintEnded() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -126,12 +132,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
@@ -140,12 +148,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotMintExceedAmountPerWallet() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -155,12 +163,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
@@ -170,12 +180,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotMintExceedMaxAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -185,12 +195,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     address[] memory addresses = utils.createUsers(11);
@@ -202,18 +214,15 @@ contract ERC721PresaleTest is BaseSetup {
     vm.expectRevert(Errors.InsufficientSupply.selector);
     vm.prank(addresses[0]);
     erc721presale.mint{value: config.publicMintPrice}(1);
-    console2.log("alice:", alice);
-    console2.log("bob:", bob);
-    console2.log("cindy:", cindy);
   }
 
   function testWhitelistMint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -223,13 +232,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -241,12 +252,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintWrongMinter() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -256,13 +267,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -273,12 +286,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintWrongAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -288,13 +301,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -305,12 +320,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintWrongPrice() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -320,13 +335,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -337,12 +354,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintInsufficientEth() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -352,13 +369,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -369,12 +388,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintNotStarted() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -384,13 +403,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp + 1,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -401,12 +422,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintEnded() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -416,13 +437,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp - 1,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -433,12 +456,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintExceedAvailableAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -448,13 +471,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -466,12 +491,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWhitelistMintExceedTotalAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -481,13 +506,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
@@ -504,12 +531,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testgetURI() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -519,13 +546,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     assertEq(erc721presale.tokenURI(0), "");
@@ -535,12 +564,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testWithdraw() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -550,12 +579,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
@@ -576,12 +607,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotWithdrawNonCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -591,12 +622,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
@@ -606,12 +639,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotSetMerkleRootNonCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -621,13 +654,15 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     Utils.Proof memory merkle = utils.getMerkleTree(0);
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
@@ -636,12 +671,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotSetURINotCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -651,12 +686,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
@@ -665,12 +702,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotSetConfigNotCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -680,26 +717,39 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     vm.expectRevert(Errors.AdminOnly.selector);
-    erc721presale.setCollectionConfig(config);
+    erc721presale.setCollectionConfig(
+      DataTypes.CollectionConfig({
+        fundsReceiver: creator,
+        maxSupply: 10,
+        maxAmountPerAddress: 1,
+        publicMintPrice: 3 ether,
+        publicStartTime: block.timestamp,
+        publicEndTime: block.timestamp + 1000,
+        whitelistStartTime: block.timestamp,
+        whitelistEndTime: block.timestamp + 1000
+      })
+    );
   }
 
   function testUpdateImpl() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -709,12 +759,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(creator);
@@ -722,12 +774,12 @@ contract ERC721PresaleTest is BaseSetup {
   }
 
   function testCannotUpdateImplNotCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
 
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 10,
       maxAmountPerAddress: 1,
@@ -737,12 +789,14 @@ contract ERC721PresaleTest is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);

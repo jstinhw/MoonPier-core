@@ -10,10 +10,14 @@ import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/util
 import {ERC1155Receiver} from "openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
 import {IERC165} from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import {IMToken} from "../interfaces/IMToken.sol";
-import "forge-std/console2.sol";
 
+/**
+ * @title MToken
+ * @author MoonPier
+ * @notice MToken is a ERC1155 presale tokens which can redeem NFTs
+ */
 contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
-  address public immutable underlyingAsset;
+  address internal immutable underlyingAsset;
   address internal immutable moonfish;
 
   constructor(address _underlyingAsset, address _moonFish) ERC1155("") {

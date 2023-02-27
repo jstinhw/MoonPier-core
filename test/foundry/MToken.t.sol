@@ -6,16 +6,16 @@ import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {IMToken} from "../../contracts/interfaces/IMToken.sol";
 
 contract MTokenTest is BaseSetup {
-  uint256 public downpaymentWETH = 10;
+  uint256 public downpaymentWETH = 1000;
 
   function setUp() public virtual override {
     BaseSetup.setUp();
-    moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
+    moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
   }
 
   function testCannotMint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     vm.startPrank(alice);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -24,7 +24,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotMintFromCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     vm.startPrank(creator);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -33,7 +33,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotBurn() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     vm.startPrank(creator);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -42,9 +42,9 @@ contract MTokenTest is BaseSetup {
   }
 
   function testTransfer() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
     uint256 amount = 10 ether;
-    uint256 mTokenAmount = (amount * (100 - downpaymentWETH)) / 100;
+    uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);

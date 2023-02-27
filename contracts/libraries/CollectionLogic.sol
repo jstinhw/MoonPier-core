@@ -26,11 +26,11 @@ library CollectionLogic {
 
   function create(
     address implementation,
-    uint256 id,
     address reserve,
+    uint256 id,
     string memory name,
     string memory symbol,
-    DataTypes.CollectionConfig memory config,
+    DataTypes.CreateCollectionParams memory config,
     mapping(uint256 => DataTypes.CollectionData) storage collections,
     address mToken
   ) external onlyCreator(id, msg.sender) {
@@ -39,25 +39,35 @@ library CollectionLogic {
     // TODO: deploy contract
     ERC721PresaleProxy deployed = new ERC721PresaleProxy(implementation, "");
     ERC721Presale(address(deployed)).initialize({
-      _admin: msg.sender,
-      _name: name,
-      _symbol: symbol,
-      _collectionConfig: config
+      admin: msg.sender,
+      name: name,
+      symbol: symbol,
+      collectionConfig: DataTypes.CollectionConfig({
+        fundsReceiver: config.fundsReceiver,
+        maxSupply: config.maxSupply,
+        maxAmountPerAddress: config.maxAmountPerAddress,
+        publicMintPrice: config.publicMintPrice,
+        publicStartTime: config.publicStartTime,
+        publicEndTime: config.publicEndTime,
+        whitelistStartTime: config.whitelistStartTime,
+        whitelistEndTime: config.whitelistEndTime
+      })
     });
 
     collections[id] = DataTypes.CollectionData({
       collection: address(deployed),
       reserve: reserve,
       index: id,
-      premintedPrice: config.publicMintPrice,
-      premintedTotalSupply: 0,
-      premintedMaxSupply: config.presaleMaxSupply,
-      premintedAmountPerAddress: config.presaleAmountPerWallet
+      presalePrice: config.presalePrice,
+      presaleTotalSupply: 0,
+      presaleMaxSupply: config.presaleMaxSupply,
+      presaleAmountPerAddress: config.presaleAmountPerWallet,
+      presaleStartTime: config.presaleStartTime,
+      presaleEndTime: config.presaleEndTime
     });
 
-    uint256 maxDownpayment = config.presaleMintPrice * config.presaleMaxSupply;
+    uint256 maxDownpayment = config.presalePrice * config.presaleMaxSupply;
     uint256 allDownpayment = IMToken(mToken).balanceOf(mToken, id);
-
     if (maxDownpayment > allDownpayment) {
       maxDownpayment = allDownpayment;
     }
@@ -75,24 +85,29 @@ library CollectionLogic {
     if (collectiondata.collection == address(0)) {
       revert Errors.MoonFishCollectionNotExist();
     }
-    uint256 downpaymentRate = reserves[collectiondata.reserve].downpaymentRate;
+    if (collectiondata.presaleTotalSupply + amount > collectiondata.presaleMaxSupply) {
+      revert Errors.MoonFishExceedMaxSupply();
+    }
+    uint256 downpaymentRate = id.tokenDownpayment();
+    // uint256 downpaymentRate = reserves[collectiondata.reserve].downpaymentRate;
     IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
     uint256 balance = mtoken.balanceOf(msg.sender, id);
-    uint256 premintPrice = ERC721Presale(collectiondata.collection).getPresalePrice();
+    // uint256 presalePrice = ERC721Presale(collectiondata.collection).getPresalePrice();
+    uint256 presalePrice = collectiondata.presalePrice;
 
-    if (balance < ((premintPrice * (100 - downpaymentRate)) / 100) * amount) {
+    if (balance < ((presalePrice * (10000 - downpaymentRate)) / 10000) * amount) {
       revert Errors.MoonFishPremintInsufficientBalance();
     }
+    collectiondata.presaleTotalSupply += amount;
 
     mtoken.safeTransferFrom(
       msg.sender,
       id.tokenCreator(),
       id,
-      ((premintPrice * (100 - downpaymentRate)) / 100) * amount,
+      ((presalePrice * (10000 - downpaymentRate)) / 10000) * amount,
       ""
     );
     ERC721Presale(collectiondata.collection).presaleMint(to, amount);
-    collectiondata.premintedTotalSupply += amount;
   }
 
   function _isCreator(uint256 _id, address _address) internal pure returns (bool) {

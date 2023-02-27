@@ -24,4 +24,5 @@ library Errors {
   error MoonFishWithdrawInsufficientBalance();
   error GatewayWithdrawInsufficientBalance();
   error InsufficientEth();
+  error MoonFishExceedMaxSupply();
 }

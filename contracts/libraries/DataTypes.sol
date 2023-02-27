@@ -9,7 +9,6 @@ pragma solidity 0.8.17;
  */
 library DataTypes {
   struct ReserveData {
-    uint256 downpaymentRate;
     address mToken;
     uint8 id;
   }
@@ -18,10 +17,28 @@ library DataTypes {
     address collection;
     address reserve;
     uint256 index;
-    uint256 premintedPrice;
-    uint256 premintedMaxSupply;
-    uint256 premintedTotalSupply;
-    uint256 premintedAmountPerAddress;
+    uint256 presalePrice;
+    uint256 presaleTotalSupply;
+    uint256 presaleMaxSupply;
+    uint256 presaleAmountPerAddress;
+    uint256 presaleStartTime;
+    uint256 presaleEndTime;
+  }
+
+  struct CreateCollectionParams {
+    address fundsReceiver;
+    uint256 maxSupply;
+    uint256 maxAmountPerAddress;
+    uint256 publicMintPrice;
+    uint256 publicStartTime;
+    uint256 publicEndTime;
+    uint256 whitelistStartTime;
+    uint256 whitelistEndTime;
+    uint256 presaleMaxSupply;
+    uint256 presalePrice;
+    uint256 presaleAmountPerWallet;
+    uint256 presaleStartTime;
+    uint256 presaleEndTime;
   }
 
   struct CollectionConfig {
@@ -33,8 +50,5 @@ library DataTypes {
     uint256 publicEndTime;
     uint256 whitelistStartTime;
     uint256 whitelistEndTime;
-    uint256 presaleMaxSupply;
-    uint256 presaleMintPrice;
-    uint256 presaleAmountPerWallet;
   }
 }

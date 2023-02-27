@@ -3,16 +3,22 @@ pragma solidity 0.8.17;
 
 import {OwnableUpgradeable} from "openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
+import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
 
-contract MoonFishAddressProvider is UUPSUpgradeable, OwnableUpgradeable {
-  uint256 private immutable version;
+/**
+ * @title MoonFishAddressProvider contract
+ * @author MoonPier
+ * @notice MoonFishAddressProvider is a contract that stores the addresses of the other MoonFish contracts
+ */
+contract MoonFishAddressProvider is UUPSUpgradeable, OwnableUpgradeable, IMoonFishAddressProvider {
+  uint256 internal immutable _version;
 
-  mapping(bytes32 => address) private addresses;
-  bytes32 private constant MOON_FISH = "MOONFISH";
+  mapping(bytes32 => address) internal _addresses;
+  bytes32 private constant MOON_FISH = "MOON_FISH";
   bytes32 private constant FEE_MANAGER = "FEE_MANAGER";
 
-  constructor(uint256 _version) initializer {
-    version = _version;
+  constructor(uint256 version) initializer {
+    _version = version;
   }
 
   function initialize() external initializer {
@@ -20,21 +26,21 @@ contract MoonFishAddressProvider is UUPSUpgradeable, OwnableUpgradeable {
     __UUPSUpgradeable_init();
   }
 
-  function _authorizeUpgrade(address _newImplementation) internal override onlyOwner {}
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function setMoonFish(address _moonFish) external {
-    addresses[MOON_FISH] = _moonFish;
+  function setMoonFish(address moonFish) external override onlyOwner {
+    _addresses[MOON_FISH] = moonFish;
   }
 
-  function setFeeManager(address _feeManager) external {
-    addresses[FEE_MANAGER] = _feeManager;
+  function setFeeManager(address feeManager) external override onlyOwner {
+    _addresses[FEE_MANAGER] = feeManager;
   }
 
-  function getMoonFish() external view returns (address) {
-    return addresses[MOON_FISH];
+  function getMoonFish() external view override returns (address) {
+    return _addresses[MOON_FISH];
   }
 
-  function getFeeManager() external view returns (address) {
-    return addresses[FEE_MANAGER];
+  function getFeeManager() external view override returns (address) {
+    return _addresses[FEE_MANAGER];
   }
 }

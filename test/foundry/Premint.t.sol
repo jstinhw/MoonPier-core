@@ -9,21 +9,21 @@ import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol
 import {Errors} from "../../contracts/libraries/Errors.sol";
 
 contract Premint is BaseSetup {
-  uint256 public downpaymentWETH = 10;
+  uint256 public downpaymentWETH = 1000;
 
   function setUp() public virtual override {
     BaseSetup.setUp();
-    moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
+    moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
   }
 
   function testPremint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     string memory name = "name";
     string memory symbol = "NM";
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -33,8 +33,10 @@ contract Premint is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
     // alice join
     vm.prank(alice);
@@ -42,7 +44,7 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
 
     // alice premint
     vm.startPrank(alice);
@@ -55,7 +57,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintNotCreate() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     // alice join
@@ -70,11 +72,11 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintNoJoin() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -84,13 +86,15 @@ contract Premint is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
 
     // alice premint
     vm.startPrank(alice);
@@ -100,14 +104,14 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintAfterLeave() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
-    uint256 mTokenAmount = (joinAmount * (100 - downpaymentWETH)) / 100;
+    uint256 mTokenAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
 
     string memory name = "name";
     string memory symbol = "NM";
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -117,8 +121,10 @@ contract Premint is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     // alice join
@@ -127,7 +133,7 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
 
     // alice leave and premint
     vm.startPrank(alice);
@@ -139,7 +145,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintFromMoonFishNotCreate() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     // alice join
@@ -154,11 +160,11 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintFromMoonFishNoJoin() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x01;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
-    DataTypes.CollectionConfig memory config = DataTypes.CollectionConfig({
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -168,13 +174,15 @@ contract Premint is BaseSetup {
       whitelistStartTime: block.timestamp,
       whitelistEndTime: block.timestamp + 1000,
       presaleMaxSupply: 10,
-      presaleMintPrice: 1 ether,
-      presaleAmountPerWallet: 1
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
     });
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(id, address(weth), name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
 
     // alice premint
     vm.startPrank(alice);

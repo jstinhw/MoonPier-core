@@ -18,6 +18,11 @@ import {Errors} from "../libraries/Errors.sol";
 
 import "forge-std/console2.sol";
 
+/**
+ * @title ERC721 contract for presale
+ * @author MoonPier
+ * @notice ERC721Presale is a contract that allows creators to pre-sell their collections
+ */
 contract ERC721Presale is
   IERC721Presale,
   ERC721AUpgradeable,
@@ -26,19 +31,18 @@ contract ERC721Presale is
   AccessControlUpgradeable
 {
   // IMoonFish internal moonfish;
-  // IFeeManager internal immutable feeManager;
-  IMoonFishAddressProvider public immutable moonFishAddressProvider;
+  IMoonFishAddressProvider internal immutable moonFishAddressProvider;
 
-  mapping(address => uint256) public whitelistMintedAmount;
-  mapping(address => uint256) public presaleMintedAmount;
+  mapping(address => uint256) internal _whitelistMintedAmount;
+  mapping(address => uint256) internal _presaleMintedAmount;
 
   // collection params
-  DataTypes.CollectionConfig public collectionConfig;
-  bytes32 public merkleRoot;
-  string public baseURI;
+  DataTypes.CollectionConfig internal _collectionConfig;
+  bytes32 internal _merkleRoot;
+  string internal _presalebaseURI;
 
-  constructor(address _moonFishaddressProvider) initializer {
-    moonFishAddressProvider = IMoonFishAddressProvider(_moonFishaddressProvider);
+  constructor(address addressProvider) initializer {
+    moonFishAddressProvider = IMoonFishAddressProvider(addressProvider);
   }
 
   modifier onlyAdmin() {
@@ -56,92 +60,33 @@ contract ERC721Presale is
   }
 
   function initialize(
-    address _admin,
-    string memory _name,
-    string memory _symbol,
-    DataTypes.CollectionConfig calldata _collectionConfig
+    address admin,
+    string memory name,
+    string memory symbol,
+    DataTypes.CollectionConfig calldata collectionConfig
   ) public initializerERC721A initializer {
-    __ERC721A_init(_name, _symbol);
+    __ERC721A_init(name, symbol);
     __UUPSUpgradeable_init();
     __AccessControl_init();
     __ReentrancyGuard_init();
-    _setupRole(DEFAULT_ADMIN_ROLE, _admin);
+    _setupRole(DEFAULT_ADMIN_ROLE, admin);
 
-    collectionConfig = _collectionConfig;
+    _collectionConfig = collectionConfig;
   }
 
-  function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
-
-  function setCollectionConfig(DataTypes.CollectionConfig calldata _config) external onlyAdmin {
-    collectionConfig = _config;
+  function setCollectionConfig(DataTypes.CollectionConfig calldata config) external override onlyAdmin {
+    _collectionConfig = config;
   }
 
-  function mint(uint256 amount) external payable {
-    if (block.timestamp < collectionConfig.publicStartTime || block.timestamp > collectionConfig.publicEndTime) {
-      revert Errors.PublicMintInvalidTime();
-    }
-    if (
-      _numberMinted(_msgSender()) - whitelistMintedAmount[_msgSender()] - presaleMintedAmount[_msgSender()] + amount >
-      collectionConfig.maxAmountPerAddress
-    ) {
-      revert Errors.PublicExceedMaxAMountPerAddress();
-    }
-    if (_totalMinted() + amount > collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
-    }
-    if (msg.value < collectionConfig.publicMintPrice * amount) {
-      revert Errors.InsufficientEth();
-    }
-    _mint(_msgSender(), amount);
+  function setBaseURI(string memory presaleBaseURI) public override onlyAdmin {
+    _presalebaseURI = presaleBaseURI;
   }
 
-  function whitelistMint(
-    bytes32[] calldata _proof,
-    uint256 _amount,
-    uint256 _maxAmount,
-    uint256 _pricePerToken
-  ) external payable {
-    if (
-      !MerkleProofUpgradeable.verify(
-        _proof,
-        merkleRoot,
-        keccak256(abi.encode(_msgSender(), _maxAmount, _pricePerToken))
-      )
-    ) {
-      revert Errors.WhitelistInvalidProof();
-    }
-
-    if (msg.value < _pricePerToken * _amount) {
-      revert Errors.WhitelistInsufficientPrice();
-    }
-
-    if (block.timestamp < collectionConfig.whitelistStartTime || block.timestamp > collectionConfig.whitelistEndTime) {
-      revert Errors.WhitelistMintInvalidTime();
-    }
-
-    if (_totalMinted() + _amount > collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
-    }
-    if (whitelistMintedAmount[_msgSender()] + _amount > _maxAmount) {
-      revert Errors.WhitelistExceedAvailableAmount();
-    }
-    _mint(_msgSender(), _amount);
-    whitelistMintedAmount[_msgSender()] = whitelistMintedAmount[_msgSender()] + _amount;
+  function setMerkleRoot(bytes32 merkleRoot) external override onlyAdmin {
+    _merkleRoot = merkleRoot;
   }
 
-  function presaleMint(address to, uint256 amount) external onlyMoonFish {
-    if (_totalMinted() + collectionConfig.presaleAmountPerWallet > collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
-    }
-    if (presaleMintedAmount[to] + collectionConfig.presaleAmountPerWallet > collectionConfig.presaleAmountPerWallet) {
-      revert Errors.PresaleExceedMaxAMountPerAddress();
-    }
-
-    _mint(to, amount);
-    presaleMintedAmount[to] = presaleMintedAmount[to] + amount;
-  }
-
-  function withdraw() external onlyAdmin {
+  function withdraw() external override onlyAdmin {
     uint256 funds = address(this).balance;
     (address payable feeRecipient, uint256 moonfishFee) = IFeeManager(moonFishAddressProvider.getFeeManager()).getFees(
       address(this)
@@ -152,47 +97,100 @@ contract ERC721Presale is
       revert Errors.TransferFeeFailed();
     }
     funds = funds - fee;
-    (bool successFund, ) = payable(collectionConfig.fundsReceiver).call{value: funds}("");
+    (bool successFund, ) = payable(_collectionConfig.fundsReceiver).call{value: funds}("");
     if (!successFund) {
       revert Errors.TransferFundFailed();
     }
+  }
+
+  function mint(uint256 amount) external payable override nonReentrant {
+    if (block.timestamp < _collectionConfig.publicStartTime || block.timestamp > _collectionConfig.publicEndTime) {
+      revert Errors.PublicMintInvalidTime();
+    }
+    if (
+      _numberMinted(_msgSender()) - _whitelistMintedAmount[_msgSender()] - _presaleMintedAmount[_msgSender()] + amount >
+      _collectionConfig.maxAmountPerAddress
+    ) {
+      revert Errors.PublicExceedMaxAMountPerAddress();
+    }
+    if (_totalMinted() + amount > _collectionConfig.maxSupply) {
+      revert Errors.InsufficientSupply();
+    }
+    if (msg.value < _collectionConfig.publicMintPrice * amount) {
+      revert Errors.InsufficientEth();
+    }
+    _mint(_msgSender(), amount);
+  }
+
+  function whitelistMint(
+    bytes32[] calldata proof,
+    uint256 amount,
+    uint256 maxAmount,
+    uint256 pricePerToken
+  ) external payable override nonReentrant {
+    if (
+      !MerkleProofUpgradeable.verify(proof, _merkleRoot, keccak256(abi.encode(_msgSender(), maxAmount, pricePerToken)))
+    ) {
+      revert Errors.WhitelistInvalidProof();
+    }
+
+    if (msg.value < pricePerToken * amount) {
+      revert Errors.WhitelistInsufficientPrice();
+    }
+
+    if (
+      block.timestamp < _collectionConfig.whitelistStartTime || block.timestamp > _collectionConfig.whitelistEndTime
+    ) {
+      revert Errors.WhitelistMintInvalidTime();
+    }
+
+    if (_totalMinted() + amount > _collectionConfig.maxSupply) {
+      revert Errors.InsufficientSupply();
+    }
+    if (_whitelistMintedAmount[_msgSender()] + amount > maxAmount) {
+      revert Errors.WhitelistExceedAvailableAmount();
+    }
+    _mint(_msgSender(), amount);
+    _whitelistMintedAmount[_msgSender()] = _whitelistMintedAmount[_msgSender()] + amount;
+  }
+
+  function presaleMint(address to, uint256 amount) external override onlyMoonFish {
+    if (_totalMinted() + amount > _collectionConfig.maxSupply) {
+      revert Errors.InsufficientSupply();
+    }
+
+    _presaleMintedAmount[to] = _presaleMintedAmount[to] + amount;
+    _mint(to, amount);
+  }
+
+  function getConfig() external view override returns (DataTypes.CollectionConfig memory) {
+    return _collectionConfig;
   }
 
   function tokenURI(uint256 tokenId) public view override returns (string memory) {
     // if (!_exists(tokenId)) {
     //   revert IERC721AUpgradeable.URIQueryForNonexistentToken();
     // }
-    return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, _toString(tokenId))) : "";
+    return bytes(_presalebaseURI).length != 0 ? string(abi.encodePacked(_presalebaseURI, _toString(tokenId))) : "";
   }
 
-  function setMerkleRoot(bytes32 _merkleRoot) external onlyAdmin {
-    merkleRoot = _merkleRoot;
+  function getMerkleRoot() external view override returns (bytes32) {
+    return _merkleRoot;
   }
 
-  function setBaseURI(string memory _baseURI) public onlyAdmin {
-    baseURI = _baseURI;
+  function getWhitelistMintedAmount(address minter) external view override returns (uint256) {
+    return _whitelistMintedAmount[minter];
   }
 
-  function getConfig() external view returns (DataTypes.CollectionConfig memory) {
-    return collectionConfig;
-  }
-
-  function getPresalePrice() external view returns (uint256) {
-    return collectionConfig.presaleMintPrice;
+  function getPresaleMintedAmount(address minter) external view override returns (uint256) {
+    return _presaleMintedAmount[minter];
   }
 
   function supportsInterface(
     bytes4 interfaceId
-  )
-    public
-    view
-    override(
-      // IERC165Upgradeable,
-      ERC721AUpgradeable,
-      AccessControlUpgradeable
-    )
-    returns (bool)
-  {
+  ) public view override(ERC721AUpgradeable, AccessControlUpgradeable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyAdmin {}
 }

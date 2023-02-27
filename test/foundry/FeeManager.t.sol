@@ -5,11 +5,11 @@ import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import "forge-std/console2.sol";
 
 contract TestFeeManager is BaseSetup {
-  uint256 public downpaymentWETH = 10;
+  uint256 public downpaymentWETH = 1000;
 
   function setUp() public override {
     BaseSetup.setUp();
-    moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
+    moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
   }
 

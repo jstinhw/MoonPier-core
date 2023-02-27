@@ -42,8 +42,8 @@ library JoinLogic {
     require(mToken != address(0), "Join: invalid reserve");
 
     IERC20(reserve).transferFrom(address(this), mToken, amount);
-
-    uint256 premintedAmount = (amount * (100 - reserves[reserve].downpaymentRate)) / 100;
+    uint256 premintedAmount = (amount * (10000 - id.tokenDownpayment())) / 10000;
+    // uint256 premintedAmount = (amount * (100 - reserves[reserve].downpaymentRate)) / 100;
     uint256 downpayment = amount - premintedAmount;
 
     IMToken(mToken).mint(mToken, id, downpayment);
@@ -64,7 +64,8 @@ library JoinLogic {
     require(mToken != address(0), "Leave: invalid reserve");
     require(amount != 0, "Leave: amount cannot be zero");
 
-    uint256 downpayment = (amount * reserves[reserve].downpaymentRate) / (100 - reserves[reserve].downpaymentRate);
+    uint256 downpayment = (amount * id.tokenDownpayment()) / (10000 - id.tokenDownpayment());
+    // uint256 downpayment = (amount * reserves[reserve].downpaymentRate) / (100 - reserves[reserve].downpaymentRate);
     uint256 withdrawAmount = amount;
 
     uint256 balance = IMToken(mToken).balanceOf(to, id);
@@ -85,9 +86,9 @@ library JoinLogic {
   }
 
   function withdraw(
+    address gateway,
     uint256 id,
     uint256 amount,
-    address gateway,
     address to,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
