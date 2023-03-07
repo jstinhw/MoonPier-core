@@ -50,12 +50,16 @@ contract Premint is BaseSetup {
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
 
+    uint256 expectedFee = (joinAmount * 1000) / 10000;
+    uint256 expectedPrice = joinAmount - expectedFee;
     // alice premint
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
     wethgateway.premint(id, 1);
-    assertEq(mtoken.balanceOf(creator, id), joinAmount);
+    assertEq(mtoken.balanceOf(creator, id), expectedPrice);
     assertEq(mtoken.balanceOf(alice, id), 0);
+    assertEq(mtoken.balanceOf(admin, id), expectedFee);
+
     assertEq(IERC721(moonfishproxy.getCollectionData(id).collection).balanceOf(alice), 1);
     assertEq(IERC721(moonfishproxy.getCollectionData(id).collection).ownerOf(0), alice);
   }

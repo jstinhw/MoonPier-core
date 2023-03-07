@@ -48,13 +48,14 @@ contract WithdrawTest is BaseSetup {
 
     vm.startPrank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
+    uint256 expectedWithdrawAmount = (downpayment * 1000) / 10000;
 
     // withdraw
     mtoken.setApprovalForAll(address(wethgateway), true);
     uint256 beforeBalance = creator.balance;
-    wethgateway.withdraw(id, downpayment);
+    wethgateway.withdraw(id, expectedWithdrawAmount);
     uint256 afterBalance = creator.balance;
-    assertEq(afterBalance - beforeBalance, downpayment);
+    assertEq(afterBalance - beforeBalance, expectedWithdrawAmount);
   }
 
   function testWithdrawPresale() public {
@@ -92,13 +93,15 @@ contract WithdrawTest is BaseSetup {
     wethgateway.premint(id, 1);
     vm.stopPrank();
 
+    uint256 expectedWithdrawAmount = (joinAmount * 1000) / 10000;
+
     // withdraw
     vm.startPrank(creator);
     mtoken.setApprovalForAll(address(wethgateway), true);
     uint256 beforeBalance = creator.balance;
-    wethgateway.withdraw(id, joinAmount);
+    wethgateway.withdraw(id, expectedWithdrawAmount);
     uint256 afterBalance = creator.balance;
-    assertEq(afterBalance - beforeBalance, joinAmount);
+    assertEq(afterBalance - beforeBalance, expectedWithdrawAmount);
   }
 
   function testWithdrawDownPaymentFromMoonFish() public {
@@ -131,11 +134,12 @@ contract WithdrawTest is BaseSetup {
 
     vm.startPrank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
+    uint256 expectedWithdrawAmount = (downpayment * 1000) / 10000;
 
     // withdraw from MoonFish directly
     mtoken.setApprovalForAll(address(moonfishproxy), true);
-    moonfishproxy.withdraw(creator, id, downpayment, creator);
-    assertEq(IWETH(address(weth)).balanceOf(address(creator)), downpayment);
+    moonfishproxy.withdraw(creator, id, expectedWithdrawAmount, creator);
+    assertEq(IWETH(address(weth)).balanceOf(address(creator)), expectedWithdrawAmount);
   }
 
   function testCannotWithdrawNonCreator() public {
@@ -362,12 +366,13 @@ contract WithdrawTest is BaseSetup {
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
+    uint256 expectedWithdrawAmount = (downpayment * 1000) / 10000;
 
     // withdraw
     vm.startPrank(address(mtoken));
     moonfishproxy.createCollection(address(weth), id, config);
     mtoken.setApprovalForAll(address(wethgateway), true);
     vm.expectRevert("Transfer failed.");
-    wethgateway.withdraw(id, downpayment);
+    wethgateway.withdraw(id, expectedWithdrawAmount);
   }
 }

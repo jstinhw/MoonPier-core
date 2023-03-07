@@ -31,6 +31,8 @@ contract ERC721Presale is
   AccessControlUpgradeable
 {
   // IMoonFish internal moonfish;
+  bytes32 public constant DEFAULT_CREATOR_ROLE = bytes32(uint256(0x01));
+  address public immutable ADMIN;
   uint256 internal _presaleTotalAmount = 0;
   IMoonFishAddressProvider internal immutable moonFishAddressProvider;
 
@@ -44,11 +46,19 @@ contract ERC721Presale is
 
   constructor(address addressProvider) initializer {
     moonFishAddressProvider = IMoonFishAddressProvider(addressProvider);
+    ADMIN = msg.sender;
   }
 
   modifier onlyAdmin() {
     if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) {
       revert Errors.AdminOnly();
+    }
+    _;
+  }
+
+  modifier onlyCreator() {
+    if (!hasRole(DEFAULT_CREATOR_ROLE, _msgSender())) {
+      revert Errors.CreatorOnly();
     }
     _;
   }
@@ -61,7 +71,7 @@ contract ERC721Presale is
   }
 
   function initialize(
-    address admin,
+    address creator,
     string memory name,
     string memory symbol,
     DataTypes.CollectionConfig calldata collectionConfig
@@ -70,24 +80,25 @@ contract ERC721Presale is
     __UUPSUpgradeable_init();
     __AccessControl_init();
     __ReentrancyGuard_init();
-    _setupRole(DEFAULT_ADMIN_ROLE, admin);
+    _setupRole(DEFAULT_ADMIN_ROLE, ADMIN);
+    _setupRole(DEFAULT_CREATOR_ROLE, creator);
 
     _collectionConfig = collectionConfig;
   }
 
-  function setCollectionConfig(DataTypes.CollectionConfig calldata config) external override onlyAdmin {
+  function setCollectionConfig(DataTypes.CollectionConfig calldata config) external override onlyCreator {
     _collectionConfig = config;
   }
 
-  function setBaseURI(string memory presaleBaseURI) public override onlyAdmin {
+  function setBaseURI(string memory presaleBaseURI) public override onlyCreator {
     _presalebaseURI = presaleBaseURI;
   }
 
-  function setMerkleRoot(bytes32 merkleRoot) external override onlyAdmin {
+  function setMerkleRoot(bytes32 merkleRoot) external override onlyCreator {
     _merkleRoot = merkleRoot;
   }
 
-  function withdraw() external override onlyAdmin {
+  function withdraw() external override onlyCreator {
     uint256 funds = address(this).balance;
     (address payable feeRecipient, uint256 moonfishFee) = IFeeManager(moonFishAddressProvider.getFeeManager()).getFees(
       address(this)

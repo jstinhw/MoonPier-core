@@ -92,6 +92,8 @@ contract LeaveTest is BaseSetup {
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
 
+    uint256 expectedFee = (downpayment * 1000) / 10000;
+    uint256 expectedDownpayment = downpayment - expectedFee;
     // leave before creator create collection
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
@@ -101,7 +103,8 @@ contract LeaveTest is BaseSetup {
 
     assertEq(ethAfter - ethBefore, mTokenAmount);
     assertEq(mtoken.balanceOf(alice, id), 0);
-    assertEq(mtoken.balanceOf(creator, id), downpayment);
+    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
+    assertEq(mtoken.balanceOf(admin, id), expectedFee);
   }
 
   function testCannotLeaveNoReserve() public {

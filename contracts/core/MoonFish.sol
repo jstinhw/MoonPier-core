@@ -13,6 +13,7 @@ import {CollectionLogic} from "../libraries/CollectionLogic.sol";
 import {JoinLogic} from "../libraries/JoinLogic.sol";
 import {TokenIdentifiers} from "./TokenIdentifiers.sol";
 import "forge-std/console2.sol";
+import {Events} from "../libraries/Events.sol";
 
 /**
  * @title MoonFish contract
@@ -22,6 +23,7 @@ import "forge-std/console2.sol";
 contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, OwnableUpgradeable {
   using TokenIdentifiers for uint256;
 
+  uint256 internal _presaleFee;
   address public immutable erc721implementation;
 
   uint8 internal _reserveCount;
@@ -48,6 +50,11 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     _reserveCount += 1;
   }
 
+  function setPresaleFee(uint256 fee) external override onlyOwner {
+    _presaleFee = fee;
+    emit Events.PresaleFeeSet(fee);
+  }
+
   function join(address reserve, uint256 id, uint256 amount, address to) external override nonReentrant {
     JoinLogic.join(reserve, id, amount, to, _reserves, _collections);
   }
@@ -62,7 +69,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   }
 
   function premint(uint256 id, uint256 amount, address to) external override nonReentrant {
-    CollectionLogic.premint(id, amount, to, _reserves, _collections);
+    CollectionLogic.premint(id, amount, to, owner(), _presaleFee, _reserves, _collections);
   }
 
   function createCollection(
@@ -70,7 +77,16 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     uint256 id,
     DataTypes.CreateCollectionParams calldata config
   ) external override nonReentrant {
-    CollectionLogic.create(erc721implementation, reserve, id, config, _collections, _reserves[reserve].mToken);
+    CollectionLogic.create(
+      erc721implementation,
+      reserve,
+      id,
+      config,
+      owner(),
+      _presaleFee,
+      _collections,
+      _reserves[reserve].mToken
+    );
   }
 
   function withdraw(
@@ -96,6 +112,10 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
 
   function getCollectionData(uint256 id) external view override returns (DataTypes.CollectionData memory) {
     return _collections[id];
+  }
+
+  function getPresaleFee() external view override returns (uint256) {
+    return _presaleFee;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

@@ -29,6 +29,8 @@ library CollectionLogic {
     address reserve,
     uint256 id,
     DataTypes.CreateCollectionParams memory config,
+    address feeTo,
+    uint256 presaleFee,
     mapping(uint256 => DataTypes.CollectionData) storage collections,
     address mToken
   ) external onlyCreator(id, msg.sender) {
@@ -37,7 +39,7 @@ library CollectionLogic {
 
     ERC721PresaleProxy deployed = new ERC721PresaleProxy(implementation, "");
     ERC721Presale(address(deployed)).initialize({
-      admin: msg.sender,
+      creator: msg.sender,
       name: config.name,
       symbol: config.symbol,
       collectionConfig: DataTypes.CollectionConfig({
@@ -69,7 +71,11 @@ library CollectionLogic {
     if (maxDownpayment > allDownpayment) {
       maxDownpayment = allDownpayment;
     }
-    IMToken(mToken).safeTransferFrom(mToken, msg.sender, id, maxDownpayment, "");
+    uint256 fee = (maxDownpayment * presaleFee) / 10000;
+
+    IMToken(mToken).safeTransferFrom(mToken, feeTo, id, fee, "");
+    IMToken(mToken).safeTransferFrom(mToken, msg.sender, id, maxDownpayment - fee, "");
+
     emit Events.CollectionCreated(reserve, msg.sender, id, address(deployed));
   }
 
@@ -77,6 +83,8 @@ library CollectionLogic {
     uint256 id,
     uint256 amount,
     address to,
+    address feeTo,
+    uint256 presaleFee,
     mapping(address => DataTypes.ReserveData) storage reserves,
     mapping(uint256 => DataTypes.CollectionData) storage collections
   ) external {
@@ -87,18 +95,21 @@ library CollectionLogic {
 
     uint256 downpaymentRate = id.tokenDownpayment();
     IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
-    uint256 balance = mtoken.balanceOf(msg.sender, id);
-    uint256 presalePrice = collectiondata.presalePrice;
+    // uint256 balance = mtoken.balanceOf(msg.sender, id);
+    // uint256 presalePrice = collectiondata.presalePrice;
 
-    if (balance < ((presalePrice * (10000 - downpaymentRate)) / 10000) * amount) {
+    if (
+      mtoken.balanceOf(msg.sender, id) < ((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount
+    ) {
       revert Errors.PremintInsufficientBalance();
     }
-
+    uint256 fee = (((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount * presaleFee) / 10000;
+    mtoken.safeTransferFrom(msg.sender, feeTo, id, fee, "");
     mtoken.safeTransferFrom(
       msg.sender,
       id.tokenCreator(),
       id,
-      ((presalePrice * (10000 - downpaymentRate)) / 10000) * amount,
+      ((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount - fee,
       ""
     );
     ERC721Presale(collectiondata.collection).presaleMint(to, amount);

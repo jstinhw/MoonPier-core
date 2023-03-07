@@ -55,7 +55,10 @@ contract BaseSetup is Test {
     erc721Presale = new ERC721Presale(address(moonFishAddressProviderProxy));
     moonfish = new MoonFish(address(erc721Presale));
     moonfishproxy = MoonFish(address(new MoonFishProxy(address(moonfish), "")));
+
     MoonFish(address(moonfishproxy)).initialize();
+    moonfishproxy.setPresaleFee(1000);
+
     mtoken = new MToken(address(weth), address(moonfishproxy));
 
     moonFishAddressProviderProxy.setMoonFish(address(moonfishproxy));

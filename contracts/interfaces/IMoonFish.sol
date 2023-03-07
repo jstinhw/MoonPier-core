@@ -12,6 +12,12 @@ interface IMoonFish {
   function addReserve(address underlying, address mToken) external;
 
   /**
+   * @notice Set presale fee
+   * @param fee The fee of presale
+   */
+  function setPresaleFee(uint256 fee) external;
+
+  /**
    * @notice Join collection as premint token
    * @param reserve The address of reserve token
    * @param id ID of premint collection
@@ -76,4 +82,9 @@ interface IMoonFish {
    * @param id ID of premint collection
    */
   function getCollectionData(uint256 id) external view returns (DataTypes.CollectionData memory);
+
+  /**
+   * @notice Get presale fee
+   */
+  function getPresaleFee() external view returns (uint256);
 }

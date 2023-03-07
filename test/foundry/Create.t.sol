@@ -44,6 +44,7 @@ contract Create is BaseSetup {
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
     address collectionAddress = moonfishproxy.getCollectionData(id).collection;
+
     assertEq(ERC721Presale(collectionAddress).name(), name);
     assertEq(ERC721Presale(collectionAddress).symbol(), symbol);
     assertEq(ERC721Presale(collectionAddress).getCollectionConfig().maxSupply, config.maxSupply);
@@ -189,12 +190,16 @@ contract Create is BaseSetup {
       presaleEndTime: block.timestamp + 1000
     });
 
+    uint256 expectedFee = (downpayment * 1000) / 10000;
+    uint256 expectedDownpayment = downpayment - expectedFee;
+
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
-    assertEq(mtoken.balanceOf(creator, id), downpayment);
+    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
+    assertEq(mtoken.balanceOf(admin, id), expectedFee);
   }
 
   function testCreateCollectionDownPaymentFuzz(uint256 joinAmount) public {
@@ -223,11 +228,15 @@ contract Create is BaseSetup {
       presaleEndTime: block.timestamp + 1000
     });
 
+    uint256 expectedFee = (downpayment * 1000) / 10000;
+    uint256 expectedDownpayment = downpayment - expectedFee;
+
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
-    assertEq(mtoken.balanceOf(creator, id), downpayment);
+    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
+    assertEq(mtoken.balanceOf(admin, id), expectedFee);
   }
 }

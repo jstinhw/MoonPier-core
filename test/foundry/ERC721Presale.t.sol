@@ -995,7 +995,7 @@ contract ERC721PresaleTest is BaseSetup {
 
     vm.startPrank(alice);
     erc721presale.mint{value: 3 ether}(1);
-    vm.expectRevert(Errors.AdminOnly.selector);
+    vm.expectRevert(Errors.CreatorOnly.selector);
     erc721presale.withdraw();
   }
 
@@ -1104,7 +1104,7 @@ contract ERC721PresaleTest is BaseSetup {
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
-    vm.expectRevert(Errors.AdminOnly.selector);
+    vm.expectRevert(Errors.CreatorOnly.selector);
     erc721presale.setMerkleRoot(merkle.root);
   }
 
@@ -1137,7 +1137,7 @@ contract ERC721PresaleTest is BaseSetup {
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
-    vm.expectRevert(Errors.AdminOnly.selector);
+    vm.expectRevert(Errors.CreatorOnly.selector);
     erc721presale.setBaseURI("");
   }
 
@@ -1217,7 +1217,7 @@ contract ERC721PresaleTest is BaseSetup {
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
-    vm.expectRevert(Errors.AdminOnly.selector);
+    vm.expectRevert(Errors.CreatorOnly.selector);
     erc721presale.setCollectionConfig(
       DataTypes.CollectionConfig({
         fundsReceiver: creator,
@@ -1264,11 +1264,11 @@ contract ERC721PresaleTest is BaseSetup {
     moonfishproxy.createCollection(address(weth), id, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
-    vm.startPrank(creator);
+    vm.startPrank(admin);
     erc721presale.upgradeTo(moonfishproxy.erc721implementation());
   }
 
-  function testCannotUpdateImplNotCreator() public {
+  function testCannotUpdateImplNotAdmin() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
@@ -1292,11 +1292,10 @@ contract ERC721PresaleTest is BaseSetup {
       presaleEndTime: block.timestamp + 1000
     });
 
-    vm.prank(creator);
+    vm.startPrank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
 
-    vm.startPrank(alice);
     vm.expectRevert(Errors.AdminOnly.selector);
     erc721presale.upgradeTo(alice);
   }

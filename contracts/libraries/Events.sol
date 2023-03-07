@@ -53,4 +53,10 @@ library Events {
    * @param amount The fee amount.
    */
   event FeeOverrideSet(address indexed collection, uint256 indexed amount);
+
+  /**
+   * @notice Emitted when a presale fee is set.
+   * @param amount The fee amount.
+   */
+  event PresaleFeeSet(uint256 indexed amount);
 }
