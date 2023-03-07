@@ -9,8 +9,10 @@ contract TestFeeManager is BaseSetup {
 
   function setUp() public override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testSetFeeFuzz(uint256 amount) public {
@@ -32,7 +34,7 @@ contract TestFeeManager is BaseSetup {
   function testCannotSetFeeExceedMax() public {
     uint256 amount = 2001;
     vm.startPrank(admin);
-    vm.expectRevert("FeeManager: Fee too high");
+    vm.expectRevert("FeeManager: Fee can only be set in 0 - 20%");
     feeManager.setFeeOverride(address(wethgateway), amount);
   }
 }

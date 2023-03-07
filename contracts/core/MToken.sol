@@ -32,14 +32,11 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
 
   function mint(address to, uint256 id, uint256 amount) external override(IMToken) onlyMoonFish {
     _mint(to, id, amount, "");
-    emit Mint(to, id, amount);
   }
 
   function burn(address from, uint256 id, uint256 amount) public override(ERC1155Burnable, IMToken) onlyMoonFish {
     _burn(from, id, amount);
     IERC20(underlyingAsset).transferFrom(address(this), from, amount);
-
-    emit Burn(from, id, amount);
   }
 
   function safeTransferFrom(

@@ -5,6 +5,8 @@ import {WETH9} from "./WETH9.sol";
 
 contract WETH9Mocked is WETH9 {
   // Mint not backed by Ether: only for testing purposes
+  function test() public override {}
+
   function mint(uint256 value) public returns (bool) {
     balanceOf[msg.sender] += value;
     emit Transfer(address(0), msg.sender, value);

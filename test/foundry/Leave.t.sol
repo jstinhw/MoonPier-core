@@ -13,13 +13,15 @@ contract LeaveTest is BaseSetup {
 
   function setUp() public virtual override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testleaveETHBeforeCollectionCreated() public {
     // join with id 1 and 10 eth
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 amount = 10 ether;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
@@ -40,7 +42,7 @@ contract LeaveTest is BaseSetup {
   function testleaveETHBeforeCollectionCreatedFuzz(uint256 amount) public {
     vm.assume(amount > 1 ether && amount < 100 ether);
     // join with id 1 and 10 eth
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
     vm.startPrank(alice);
@@ -71,6 +73,8 @@ contract LeaveTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -86,7 +90,7 @@ contract LeaveTest is BaseSetup {
       presaleEndTime: block.timestamp + 1000
     });
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // leave before creator create collection
     vm.startPrank(alice);
@@ -100,8 +104,18 @@ contract LeaveTest is BaseSetup {
     assertEq(mtoken.balanceOf(creator, id), downpayment);
   }
 
+  function testCannotLeaveNoReserve() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
+
+    vm.startPrank(alice);
+    vm.expectRevert("Leave: invalid reserve");
+    moonfishproxy.leave(address(1), id, mTokenAmount, alice);
+  }
+
   function testCannotLeaveWithZeroAmount() public {
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 amount = 0 ether;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
@@ -112,7 +126,7 @@ contract LeaveTest is BaseSetup {
   }
 
   function testCannotLeaveBeforeJoin() public {
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 amount = 1 ether;
     uint256 downpayment = (amount * downpaymentWETH) / 10000;
     uint256 mTokenAmount = amount - downpayment;
@@ -125,7 +139,7 @@ contract LeaveTest is BaseSetup {
   }
 
   function testCannotLeaveInvalidAmount() public {
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 amount = 1 ether;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
@@ -137,7 +151,7 @@ contract LeaveTest is BaseSetup {
   }
 
   function testCannotLeaveByOther() public {
-    uint256 id = 0x3e8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
     uint256 amount = 0 ether;
     uint256 downpayment = (amount * downpaymentWETH) / 10000;
     uint256 mTokenAmount = amount - downpayment;
@@ -150,5 +164,31 @@ contract LeaveTest is BaseSetup {
     mtoken.setApprovalForAll(address(moonfishproxy), true);
     vm.expectRevert("Leave: amount cannot be zero");
     moonfishproxy.leave(address(weth), id, mTokenAmount, alice);
+  }
+
+  function testCannotLeaveInsufficientAmount() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
+    uint256 amount = 1 ether;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    vm.expectRevert(Errors.LeaveInsufficientBalance.selector);
+    moonfishproxy.leave(address(weth), id, amount, alice);
+  }
+
+  function testCannotLeaveNonReceivedTo() public {
+    // join with id 1 and 10 eth
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+
+    // leave before creator create collection
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    vm.expectRevert("Transfer failed.");
+    wethgateway.leaveETH(id, mTokenAmount, address(feeManager));
   }
 }

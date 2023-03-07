@@ -2,27 +2,28 @@
 pragma solidity 0.8.17;
 
 library Errors {
-  error AdminOnly();
-  error PublicMintInvalidTime();
-  error InsufficientSupply();
-  error PublicExceedMaxAMountPerAddress();
-  error WhitelistMintInvalidTime();
-  error WhitelistExceedAvailableAmount();
-  error WhitelistInvalidProof();
-  error WhitelistInsufficientPrice();
-  error TransferFeeFailed();
-  error TransferFundFailed();
-  error PresaleExceedMaxAMountPerAddress();
-  error PresaleInvalidMint();
+  // moonPier Errors
   error CollectionNotExist();
-  error MoonFishOnly();
+  error LeaveInsufficientBalance();
+  error WithdrawInsufficientBalance();
+  error PremintInsufficientBalance();
   error GatewayLeaveInsufficientBalance();
-  error MoonFishLeaveInsufficientBalance();
   error GatewayPremintInsufficientBalance();
-  error MoonFishPremintInsufficientBalance();
-  error MoonFishCollectionNotExist();
-  error MoonFishWithdrawInsufficientBalance();
   error GatewayWithdrawInsufficientBalance();
+
+  // erc721presale Errors
+  error AdminOnly();
+  error MoonFishOnly();
+  error WithdrawFundFailed();
+  error WithdrawFeeFailed();
   error InsufficientEth();
-  error MoonFishExceedMaxSupply();
+  error InvalidPublicMintTime();
+  error ExceedMaxAmountPerAddress();
+  error ExceedMaxSupply();
+  error InvalidWhitelistProof();
+  error InvalidWhitelistMintTime();
+  error ExceedWhitelistAvailableAmount();
+  error InvalidPresaleMintTime();
+  error ExceedPresaleMaxAmount();
+  error ExceedPresaleMaxAmountPerAddress();
 }

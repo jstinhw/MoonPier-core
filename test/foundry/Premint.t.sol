@@ -13,8 +13,10 @@ contract Premint is BaseSetup {
 
   function setUp() public virtual override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testPremint() public {
@@ -24,6 +26,8 @@ contract Premint is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -44,7 +48,7 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // alice premint
     vm.startPrank(alice);
@@ -77,6 +81,8 @@ contract Premint is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -94,7 +100,7 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // alice premint
     vm.startPrank(alice);
@@ -112,6 +118,8 @@ contract Premint is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -133,7 +141,7 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // alice leave and premint
     vm.startPrank(alice);
@@ -155,7 +163,7 @@ contract Premint is BaseSetup {
     // alice premint
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(moonfishproxy), true);
-    vm.expectRevert(Errors.MoonFishCollectionNotExist.selector);
+    vm.expectRevert(Errors.CollectionNotExist.selector);
     moonfishproxy.premint(id, 1, msg.sender);
   }
 
@@ -165,6 +173,8 @@ contract Premint is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -182,12 +192,12 @@ contract Premint is BaseSetup {
 
     // create create collection
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // alice premint
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(moonfishproxy), true);
-    vm.expectRevert(Errors.MoonFishPremintInsufficientBalance.selector);
+    vm.expectRevert(Errors.PremintInsufficientBalance.selector);
     moonfishproxy.premint(id, 1, msg.sender);
   }
 }

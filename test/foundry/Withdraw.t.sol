@@ -12,8 +12,10 @@ contract WithdrawTest is BaseSetup {
 
   function setUp() public virtual override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testWithdrawDownPayment() public {
@@ -25,6 +27,8 @@ contract WithdrawTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -43,7 +47,7 @@ contract WithdrawTest is BaseSetup {
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // withdraw
     mtoken.setApprovalForAll(address(wethgateway), true);
@@ -60,6 +64,8 @@ contract WithdrawTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -78,7 +84,7 @@ contract WithdrawTest is BaseSetup {
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // premint
     vm.startPrank(alice);
@@ -104,6 +110,8 @@ contract WithdrawTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -122,7 +130,7 @@ contract WithdrawTest is BaseSetup {
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // withdraw from MoonFish directly
     mtoken.setApprovalForAll(address(moonfishproxy), true);
@@ -138,6 +146,8 @@ contract WithdrawTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -158,7 +168,7 @@ contract WithdrawTest is BaseSetup {
 
     // create
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // withdraw from MoonFish directly
     vm.startPrank(alice);
@@ -176,6 +186,8 @@ contract WithdrawTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -194,7 +206,7 @@ contract WithdrawTest is BaseSetup {
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     // withdraw from MoonFish directly
     vm.startPrank(alice);
@@ -214,7 +226,148 @@ contract WithdrawTest is BaseSetup {
 
     // withdraw from MoonFish directly
     mtoken.setApprovalForAll(address(moonfishproxy), true);
-    vm.expectRevert(Errors.MoonFishCollectionNotExist.selector);
+    vm.expectRevert(Errors.CollectionNotExist.selector);
     moonfishproxy.withdraw(alice, id, premintedAmount, creator);
+  }
+
+  function testCannotWithdrawZeroAmount() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 joinAmount = 1 ether;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+    vm.prank(alice);
+    wethgateway.joinETH{value: joinAmount}(id);
+
+    vm.startPrank(creator);
+    moonfishproxy.createCollection(address(weth), id, config);
+
+    // withdraw
+    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    vm.expectRevert("Withdraw: amount cannot be zero");
+    moonfishproxy.withdraw(address(wethgateway), id, 0, creator);
+  }
+
+  function testCannotWithdrawInsufficientAmount() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 joinAmount = 1 ether;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+    vm.prank(alice);
+    wethgateway.joinETH{value: joinAmount}(id);
+
+    vm.startPrank(creator);
+    moonfishproxy.createCollection(address(weth), id, config);
+
+    // withdraw
+    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    vm.expectRevert(Errors.WithdrawInsufficientBalance.selector);
+    moonfishproxy.withdraw(address(wethgateway), id, joinAmount, creator);
+  }
+
+  function testCannotWithdrawGatewayInsufficientAmount() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 joinAmount = 1 ether;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+    vm.prank(alice);
+    wethgateway.joinETH{value: joinAmount}(id);
+
+    vm.startPrank(creator);
+    moonfishproxy.createCollection(address(weth), id, config);
+
+    // withdraw
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    vm.expectRevert(Errors.GatewayWithdrawInsufficientBalance.selector);
+    wethgateway.withdraw(id, joinAmount);
+  }
+
+  function testCannotWithdrawNonReceiveTo() public {
+    uint256 id = (uint256(uint160(address(mtoken))) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 joinAmount = 1 ether;
+    uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
+    uint256 downpayment = joinAmount - premintedAmount;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+    vm.prank(alice);
+    wethgateway.joinETH{value: joinAmount}(id);
+
+    // withdraw
+    vm.startPrank(address(mtoken));
+    moonfishproxy.createCollection(address(weth), id, config);
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    vm.expectRevert("Transfer failed.");
+    wethgateway.withdraw(id, downpayment);
   }
 }

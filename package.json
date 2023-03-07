@@ -11,7 +11,9 @@
     "test:forge": "forge build; forge test -vvv",
     "lint": "yarn lint:sol",
     "lint:sol": "prettier --write \"contracts/**/*.sol\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "coverage": "forge coverage",
+    "coverage:report": "forge coverage --report lcov"
   },
   "author": "MoonPier",
   "license": "Apache-2.0",

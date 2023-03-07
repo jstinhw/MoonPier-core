@@ -18,14 +18,11 @@ library DataTypes {
     address reserve;
     uint256 index;
     uint256 presalePrice;
-    uint256 presaleTotalSupply;
-    uint256 presaleMaxSupply;
-    uint256 presaleAmountPerAddress;
-    uint256 presaleStartTime;
-    uint256 presaleEndTime;
   }
 
   struct CreateCollectionParams {
+    string name;
+    string symbol;
     address fundsReceiver;
     uint256 maxSupply;
     uint256 maxAmountPerAddress;
@@ -50,5 +47,9 @@ library DataTypes {
     uint256 publicEndTime;
     uint256 whitelistStartTime;
     uint256 whitelistEndTime;
+    uint256 presaleMaxSupply;
+    uint256 presaleAmountPerWallet;
+    uint256 presaleStartTime;
+    uint256 presaleEndTime;
   }
 }

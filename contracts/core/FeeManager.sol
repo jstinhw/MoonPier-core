@@ -3,6 +3,7 @@ pragma solidity 0.8.17;
 
 import {IFeeManager} from "../interfaces/IFeeManager.sol";
 import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {Events} from "../libraries/Events.sol";
 
 /**
  * @title FeeManager contract
@@ -19,9 +20,9 @@ contract FeeManager is Ownable, IFeeManager {
   }
 
   function setFeeOverride(address collection, uint256 amount) external override onlyOwner {
-    require(amount < 2001, "FeeManager: Fee too high");
+    require(amount > 0 && amount < 2001, "FeeManager: Fee can only be set in 0 - 20%");
     _feeOverride[collection] = amount;
-    emit FeeOverrideSet(collection, amount);
+    emit Events.FeeOverrideSet(collection, amount);
   }
 
   function getFees(address collection) external view override returns (address payable, uint256) {

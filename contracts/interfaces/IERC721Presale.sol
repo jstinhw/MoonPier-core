@@ -57,7 +57,7 @@ interface IERC721Presale {
   /**
    * @notice Get collection config
    */
-  function getConfig() external view returns (DataTypes.CollectionConfig memory);
+  function getCollectionConfig() external view returns (DataTypes.CollectionConfig memory);
 
   /**
    * @notice Get merkle root

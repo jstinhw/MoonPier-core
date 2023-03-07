@@ -12,8 +12,10 @@ contract Create is BaseSetup {
 
   function setUp() public virtual override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testCreateCollection() public {
@@ -22,6 +24,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -38,11 +42,11 @@ contract Create is BaseSetup {
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
     address collectionAddress = moonfishproxy.getCollectionData(id).collection;
     assertEq(ERC721Presale(collectionAddress).name(), name);
     assertEq(ERC721Presale(collectionAddress).symbol(), symbol);
-    assertEq(ERC721Presale(collectionAddress).getConfig().maxSupply, config.maxSupply);
+    assertEq(ERC721Presale(collectionAddress).getCollectionConfig().maxSupply, config.maxSupply);
   }
 
   function testCannotCreateCollectionInvalidID() public {
@@ -51,6 +55,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -67,7 +73,7 @@ contract Create is BaseSetup {
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
-    moonfish.createCollection(address(weth), id, name, symbol, config);
+    moonfish.createCollection(address(weth), id, config);
   }
 
   function testCannotCreateCollectionNotCreator() public {
@@ -76,6 +82,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -92,7 +100,37 @@ contract Create is BaseSetup {
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
-    moonfish.createCollection(address(weth), id, name, symbol, config);
+    moonfish.createCollection(address(weth), id, config);
+  }
+
+  function testCannotCreateCollectionInvalidmToken() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+    vm.prank(admin);
+    moonfishproxy.addReserve(address(weth), address(0));
+
+    vm.prank(creator);
+    vm.expectRevert("Create: invalid reserve");
+    moonfishproxy.createCollection(address(weth), id, config);
   }
 
   function testCannotCreateCollectionExisting() public {
@@ -101,6 +139,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -117,10 +157,10 @@ contract Create is BaseSetup {
     });
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     vm.expectRevert("Create: collection exists");
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
   }
 
   function testCreateCollectionDownPayment() public {
@@ -132,6 +172,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -150,7 +192,7 @@ contract Create is BaseSetup {
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
     assertEq(mtoken.balanceOf(creator, id), downpayment);
   }
@@ -164,6 +206,8 @@ contract Create is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -182,7 +226,7 @@ contract Create is BaseSetup {
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
     assertEq(mtoken.balanceOf(creator, id), downpayment);
   }

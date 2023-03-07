@@ -43,6 +43,7 @@ contract BaseSetup is Test {
     weth = new WETH9Mocked();
 
     // deploy Address Provider
+    vm.startPrank(admin);
     moonFishAddressProvider = new MoonFishAddressProvider(0);
     moonFishAddressProviderProxy = MoonFishAddressProvider(
       address(new MoonFishProxy(address(moonFishAddressProvider), ""))
@@ -59,9 +60,13 @@ contract BaseSetup is Test {
 
     moonFishAddressProviderProxy.setMoonFish(address(moonfishproxy));
     moonFishAddressProviderProxy.setFeeManager(address(feeManager));
-
+    vm.stopPrank();
     // wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
 
     // moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
+  }
+
+  function testSetup() public {
+    setUp();
   }
 }

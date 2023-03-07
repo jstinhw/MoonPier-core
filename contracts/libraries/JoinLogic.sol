@@ -9,6 +9,7 @@ import {IMToken} from "../interfaces/IMToken.sol";
 import {Errors} from "../libraries/Errors.sol";
 import "forge-std/console2.sol";
 import {TokenIdentifiers} from "../core/TokenIdentifiers.sol";
+import {Events} from "../libraries/Events.sol";
 
 /**
  * @title JoinLogic library
@@ -18,11 +19,11 @@ import {TokenIdentifiers} from "../core/TokenIdentifiers.sol";
 
 library JoinLogic {
   using TokenIdentifiers for uint256;
-  event Join(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
+  // event Join(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
 
-  event Leave(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
+  // event Leave(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
 
-  event Withdraw(address indexed user, uint256 indexed id, uint256 indexed amount);
+  // event Withdraw(address indexed user, uint256 indexed id, uint256 indexed amount);
 
   modifier onlyCreator(uint256 id, address creator) {
     require(_isCreator(id, creator), "Create: not creator");
@@ -43,13 +44,12 @@ library JoinLogic {
 
     IERC20(reserve).transferFrom(address(this), mToken, amount);
     uint256 premintedAmount = (amount * (10000 - id.tokenDownpayment())) / 10000;
-    // uint256 premintedAmount = (amount * (100 - reserves[reserve].downpaymentRate)) / 100;
     uint256 downpayment = amount - premintedAmount;
 
     IMToken(mToken).mint(mToken, id, downpayment);
     IMToken(mToken).mint(to, id, premintedAmount);
 
-    emit Join(reserve, to, amount, id);
+    emit Events.CollectionJoined(reserve, to, amount, id);
   }
 
   function leave(
@@ -65,15 +65,13 @@ library JoinLogic {
     require(amount != 0, "Leave: amount cannot be zero");
 
     uint256 downpayment = (amount * id.tokenDownpayment()) / (10000 - id.tokenDownpayment());
-    // uint256 downpayment = (amount * reserves[reserve].downpaymentRate) / (100 - reserves[reserve].downpaymentRate);
     uint256 withdrawAmount = amount;
 
     uint256 balance = IMToken(mToken).balanceOf(to, id);
 
     if (balance < withdrawAmount) {
-      revert Errors.MoonFishLeaveInsufficientBalance();
+      revert Errors.LeaveInsufficientBalance();
     }
-
     if (collections[id].collection == address(0)) {
       withdrawAmount = amount + downpayment;
       IMToken(mToken).safeTransferFrom(mToken, to, id, downpayment, "");
@@ -81,7 +79,7 @@ library JoinLogic {
 
     IMToken(mToken).burn(to, id, withdrawAmount);
 
-    emit Leave(reserve, to, amount, id);
+    emit Events.CollectionLeft(reserve, to, amount, id);
     return withdrawAmount;
   }
 
@@ -96,20 +94,19 @@ library JoinLogic {
     DataTypes.CollectionData memory cData = collections[id];
 
     if (cData.collection == address(0)) {
-      revert Errors.MoonFishCollectionNotExist();
+      revert Errors.CollectionNotExist();
     }
     address reserve = cData.reserve;
     address mToken = reserves[reserve].mToken;
-    require(mToken != address(0), "Withdraw: invalid reserve");
     require(amount != 0, "Withdraw: amount cannot be zero");
 
     uint256 balance = IMToken(mToken).balanceOf(gateway, id);
     if (balance < amount) {
-      revert Errors.MoonFishWithdrawInsufficientBalance();
+      revert Errors.WithdrawInsufficientBalance();
     }
     IMToken(mToken).burn(gateway, id, amount);
 
-    emit Withdraw(to, id, amount);
+    emit Events.CollectionWithdraw(gateway, to, id, amount);
     return amount;
   }
 

@@ -7,12 +7,12 @@ import {IMToken} from "../interfaces/IMToken.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
-// import {TestERC721} from "../test/TestERC721.sol";
 import {ERC721Presale} from "../core/ERC721Presale.sol";
 import {ERC721PresaleProxy} from "../core/ERC721PresaleProxy.sol";
 import {ERC721Presale} from "../core/ERC721Presale.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
+import {Events} from "../libraries/Events.sol";
 
 import "forge-std/console2.sol";
 
@@ -28,20 +28,18 @@ library CollectionLogic {
     address implementation,
     address reserve,
     uint256 id,
-    string memory name,
-    string memory symbol,
     DataTypes.CreateCollectionParams memory config,
     mapping(uint256 => DataTypes.CollectionData) storage collections,
     address mToken
   ) external onlyCreator(id, msg.sender) {
     require(collections[id].collection == address(0), "Create: collection exists");
+    require(mToken != address(0), "Create: invalid reserve");
 
-    // TODO: deploy contract
     ERC721PresaleProxy deployed = new ERC721PresaleProxy(implementation, "");
     ERC721Presale(address(deployed)).initialize({
       admin: msg.sender,
-      name: name,
-      symbol: symbol,
+      name: config.name,
+      symbol: config.symbol,
       collectionConfig: DataTypes.CollectionConfig({
         fundsReceiver: config.fundsReceiver,
         maxSupply: config.maxSupply,
@@ -50,7 +48,11 @@ library CollectionLogic {
         publicStartTime: config.publicStartTime,
         publicEndTime: config.publicEndTime,
         whitelistStartTime: config.whitelistStartTime,
-        whitelistEndTime: config.whitelistEndTime
+        whitelistEndTime: config.whitelistEndTime,
+        presaleMaxSupply: config.presaleMaxSupply,
+        presaleAmountPerWallet: config.presaleAmountPerWallet,
+        presaleStartTime: config.presaleStartTime,
+        presaleEndTime: config.presaleEndTime
       })
     });
 
@@ -58,20 +60,17 @@ library CollectionLogic {
       collection: address(deployed),
       reserve: reserve,
       index: id,
-      presalePrice: config.presalePrice,
-      presaleTotalSupply: 0,
-      presaleMaxSupply: config.presaleMaxSupply,
-      presaleAmountPerAddress: config.presaleAmountPerWallet,
-      presaleStartTime: config.presaleStartTime,
-      presaleEndTime: config.presaleEndTime
+      presalePrice: config.presalePrice
     });
 
     uint256 maxDownpayment = config.presalePrice * config.presaleMaxSupply;
     uint256 allDownpayment = IMToken(mToken).balanceOf(mToken, id);
+
     if (maxDownpayment > allDownpayment) {
       maxDownpayment = allDownpayment;
     }
     IMToken(mToken).safeTransferFrom(mToken, msg.sender, id, maxDownpayment, "");
+    emit Events.CollectionCreated(reserve, msg.sender, id, address(deployed));
   }
 
   function premint(
@@ -83,22 +82,17 @@ library CollectionLogic {
   ) external {
     DataTypes.CollectionData storage collectiondata = collections[id];
     if (collectiondata.collection == address(0)) {
-      revert Errors.MoonFishCollectionNotExist();
+      revert Errors.CollectionNotExist();
     }
-    if (collectiondata.presaleTotalSupply + amount > collectiondata.presaleMaxSupply) {
-      revert Errors.MoonFishExceedMaxSupply();
-    }
+
     uint256 downpaymentRate = id.tokenDownpayment();
-    // uint256 downpaymentRate = reserves[collectiondata.reserve].downpaymentRate;
     IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
     uint256 balance = mtoken.balanceOf(msg.sender, id);
-    // uint256 presalePrice = ERC721Presale(collectiondata.collection).getPresalePrice();
     uint256 presalePrice = collectiondata.presalePrice;
 
     if (balance < ((presalePrice * (10000 - downpaymentRate)) / 10000) * amount) {
-      revert Errors.MoonFishPremintInsufficientBalance();
+      revert Errors.PremintInsufficientBalance();
     }
-    collectiondata.presaleTotalSupply += amount;
 
     mtoken.safeTransferFrom(
       msg.sender,
@@ -108,6 +102,7 @@ library CollectionLogic {
       ""
     );
     ERC721Presale(collectiondata.collection).presaleMint(to, amount);
+    emit Events.CollectionPreminted(collectiondata.reserve, msg.sender, id, amount);
   }
 
   function _isCreator(uint256 _id, address _address) internal pure returns (bool) {

@@ -12,8 +12,10 @@ contract JoinTest is BaseSetup {
 
   function setUp() public virtual override {
     BaseSetup.setUp();
+    vm.startPrank(admin);
     moonfishproxy.addReserve(address(weth), address(mtoken));
     wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    vm.stopPrank();
   }
 
   function testjoinETH() public {
@@ -106,6 +108,8 @@ contract JoinTest is BaseSetup {
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -121,7 +125,7 @@ contract JoinTest is BaseSetup {
       presaleEndTime: block.timestamp + 1000
     });
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, name, symbol, config);
+    moonfishproxy.createCollection(address(weth), id, config);
 
     vm.expectRevert("Join: collection exists");
     vm.prank(alice);

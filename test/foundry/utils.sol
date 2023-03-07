@@ -10,6 +10,8 @@ contract Utils is Test {
     uint256 price;
   }
 
+  function test() public {}
+
   function createUsers(uint256 userNum) external returns (address[] memory) {
     address[] memory users = new address[](userNum);
 

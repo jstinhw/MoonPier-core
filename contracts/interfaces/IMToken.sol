@@ -5,22 +5,6 @@ import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.
 
 interface IMToken is IERC1155 {
   /**
-   * @dev Emitted on mint()
-   * @param to The address to mint to
-   * @param id The id of the token to mint
-   * @param amount The amount of tokens to mint
-   */
-  event Mint(address indexed to, uint256 indexed id, uint256 amount);
-
-  /**
-   * @dev Emitted on burn()
-   * @param from The address to burn from
-   * @param id The id of the token to burn
-   * @param amount The amount of tokens to burn
-   */
-  event Burn(address indexed from, uint256 indexed id, uint256 amount);
-
-  /**
    * @dev Mints `amount` mtokens to 'to'
    * @param to The address to mint to
    * @param id The id of the token to mint

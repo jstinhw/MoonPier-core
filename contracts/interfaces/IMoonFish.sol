@@ -5,34 +5,6 @@ import {DataTypes} from "../libraries/DataTypes.sol";
 
 interface IMoonFish {
   /**
-   * @notice Emitted on join()
-   * @param user The address calling join()
-   * @param reserve The address of reserve token
-   * @param amount The amount of underlying token
-   * @param id ID of premint collection
-   */
-  event Join(address indexed user, address indexed reserve, uint256 amount, uint256 id);
-
-  /**
-   * @notice Emitted on leave()
-   * @param user The address calling leave()
-   * @param reserve The address of reserve token
-   * @param amount The amount of underlying token
-   * @param id ID of premint collection
-   * @param to The address to send underlying token
-   */
-  event Leave(address indexed user, address indexed reserve, uint256 amount, uint256 id, address indexed to);
-
-  /**
-   * @notice Emitted on premint()
-   * @param user The address calling premint()
-   * @param id ID of preminted collection
-   * @param amount The amount of preminted collection tokens
-   * @param collection The address of preminted collection
-   */
-  event Premint(address user, uint256 indexed id, uint256 amount, address collection);
-
-  /**
    * @notice Add reserve
    * @param underlying The underlying asset address of reserve token
    * @param mToken The address of mToken
@@ -69,17 +41,9 @@ interface IMoonFish {
    * @notice Create collection by creator
    * @param reserve The address of reserve underlying token
    * @param id ID of premint collection
-   * @param name The name of collection
-   * @param symbol The symbol of collection
    * @param config The config of collection
    */
-  function createCollection(
-    address reserve,
-    uint256 id,
-    string memory name,
-    string memory symbol,
-    DataTypes.CreateCollectionParams calldata config
-  ) external;
+  function createCollection(address reserve, uint256 id, DataTypes.CreateCollectionParams calldata config) external;
 
   /**
    * @notice Withdraw reserve token
@@ -89,6 +53,11 @@ interface IMoonFish {
    * @param to The address to send reserve token
    */
   function withdraw(address gateway, uint256 id, uint256 amount, address to) external returns (uint256);
+
+  /**
+   * @notice Get reserve count
+   */
+  function getReserveCount() external view returns (uint8);
 
   /**
    * @notice Get reserve underlying token address from id

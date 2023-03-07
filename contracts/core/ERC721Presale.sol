@@ -7,7 +7,7 @@ import {AccessControlUpgradeable} from "openzeppelin-upgradeable/contracts/acces
 import {MerkleProofUpgradeable} from "openzeppelin-upgradeable/contracts/utils/cryptography/MerkleProofUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "openzeppelin-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
-import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/IERC2981Upgradeable.sol";
+import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/IERC165Upgradeable.sol";
 
 import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
@@ -31,6 +31,7 @@ contract ERC721Presale is
   AccessControlUpgradeable
 {
   // IMoonFish internal moonfish;
+  uint256 internal _presaleTotalAmount = 0;
   IMoonFishAddressProvider internal immutable moonFishAddressProvider;
 
   mapping(address => uint256) internal _whitelistMintedAmount;
@@ -94,27 +95,27 @@ contract ERC721Presale is
     uint256 fee = (funds * moonfishFee) / 10000;
     (bool successFee, ) = feeRecipient.call{value: fee}("");
     if (!successFee) {
-      revert Errors.TransferFeeFailed();
+      revert Errors.WithdrawFeeFailed();
     }
     funds = funds - fee;
     (bool successFund, ) = payable(_collectionConfig.fundsReceiver).call{value: funds}("");
     if (!successFund) {
-      revert Errors.TransferFundFailed();
+      revert Errors.WithdrawFundFailed();
     }
   }
 
   function mint(uint256 amount) external payable override nonReentrant {
     if (block.timestamp < _collectionConfig.publicStartTime || block.timestamp > _collectionConfig.publicEndTime) {
-      revert Errors.PublicMintInvalidTime();
+      revert Errors.InvalidPublicMintTime();
     }
     if (
       _numberMinted(_msgSender()) - _whitelistMintedAmount[_msgSender()] - _presaleMintedAmount[_msgSender()] + amount >
       _collectionConfig.maxAmountPerAddress
     ) {
-      revert Errors.PublicExceedMaxAMountPerAddress();
+      revert Errors.ExceedMaxAmountPerAddress();
     }
     if (_totalMinted() + amount > _collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
+      revert Errors.ExceedMaxSupply();
     }
     if (msg.value < _collectionConfig.publicMintPrice * amount) {
       revert Errors.InsufficientEth();
@@ -131,24 +132,24 @@ contract ERC721Presale is
     if (
       !MerkleProofUpgradeable.verify(proof, _merkleRoot, keccak256(abi.encode(_msgSender(), maxAmount, pricePerToken)))
     ) {
-      revert Errors.WhitelistInvalidProof();
+      revert Errors.InvalidWhitelistProof();
     }
 
     if (msg.value < pricePerToken * amount) {
-      revert Errors.WhitelistInsufficientPrice();
+      revert Errors.InsufficientEth();
     }
 
     if (
       block.timestamp < _collectionConfig.whitelistStartTime || block.timestamp > _collectionConfig.whitelistEndTime
     ) {
-      revert Errors.WhitelistMintInvalidTime();
+      revert Errors.InvalidWhitelistMintTime();
     }
 
     if (_totalMinted() + amount > _collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
+      revert Errors.ExceedMaxSupply();
     }
     if (_whitelistMintedAmount[_msgSender()] + amount > maxAmount) {
-      revert Errors.WhitelistExceedAvailableAmount();
+      revert Errors.ExceedWhitelistAvailableAmount();
     }
     _mint(_msgSender(), amount);
     _whitelistMintedAmount[_msgSender()] = _whitelistMintedAmount[_msgSender()] + amount;
@@ -156,14 +157,27 @@ contract ERC721Presale is
 
   function presaleMint(address to, uint256 amount) external override onlyMoonFish {
     if (_totalMinted() + amount > _collectionConfig.maxSupply) {
-      revert Errors.InsufficientSupply();
+      revert Errors.ExceedMaxSupply();
+    }
+    if (block.timestamp < _collectionConfig.presaleStartTime || block.timestamp > _collectionConfig.presaleEndTime) {
+      revert Errors.InvalidPresaleMintTime();
+    }
+    if (_presaleMintedAmount[to] + amount > _collectionConfig.presaleAmountPerWallet) {
+      revert Errors.ExceedPresaleMaxAmountPerAddress();
+    }
+    if (_presaleTotalAmount + amount > _collectionConfig.presaleMaxSupply) {
+      revert Errors.ExceedPresaleMaxAmount();
+    }
+    if (_numberMinted(to) + amount > _collectionConfig.maxAmountPerAddress) {
+      revert Errors.ExceedMaxAmountPerAddress();
     }
 
     _presaleMintedAmount[to] = _presaleMintedAmount[to] + amount;
+    _presaleTotalAmount = _presaleTotalAmount + amount;
     _mint(to, amount);
   }
 
-  function getConfig() external view override returns (DataTypes.CollectionConfig memory) {
+  function getCollectionConfig() external view override returns (DataTypes.CollectionConfig memory) {
     return _collectionConfig;
   }
 

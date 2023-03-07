@@ -29,6 +29,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   mapping(uint256 => address) internal _reservesList;
 
   mapping(uint256 => DataTypes.CollectionData) internal _collections;
+  mapping(address => mapping(address => uint256)) internal _presaleMinted;
 
   constructor(address _erc721presaleimpl) initializer {
     erc721implementation = _erc721presaleimpl;
@@ -37,6 +38,7 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   function initialize() external initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
+    __ReentrancyGuard_init();
   }
 
   function addReserve(address underlyingAsset, address mToken) external override onlyOwner {
@@ -66,20 +68,9 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
   function createCollection(
     address reserve,
     uint256 id,
-    string memory name,
-    string memory symbol,
     DataTypes.CreateCollectionParams calldata config
   ) external override nonReentrant {
-    CollectionLogic.create(
-      erc721implementation,
-      reserve,
-      id,
-      name,
-      symbol,
-      config,
-      _collections,
-      _reserves[reserve].mToken
-    );
+    CollectionLogic.create(erc721implementation, reserve, id, config, _collections, _reserves[reserve].mToken);
   }
 
   function withdraw(
@@ -89,6 +80,10 @@ contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, Own
     address to
   ) external override nonReentrant returns (uint256) {
     return JoinLogic.withdraw(gateway, id, amount, to, _reserves, _collections);
+  }
+
+  function getReserveCount() external view override returns (uint8) {
+    return _reserveCount;
   }
 
   function getReserveUnderlyingFromId(uint256 id) external view override returns (address) {
