@@ -19,7 +19,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testWithdrawDownPayment() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
@@ -59,7 +59,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testWithdrawPresale() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
 
     string memory name = "name";
@@ -105,7 +105,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testWithdrawDownPaymentFromMoonFish() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
@@ -143,7 +143,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testCannotWithdrawNonCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
 
@@ -182,7 +182,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testShouldNotWithdrawFromMoonFish() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
@@ -221,7 +221,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testCanNotWithdrawCollectionNotExist() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
 
@@ -235,7 +235,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testCannotWithdrawZeroAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
 
     string memory name = "name";
@@ -270,7 +270,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testCannotWithdrawInsufficientAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
 
     string memory name = "name";
@@ -305,7 +305,7 @@ contract WithdrawTest is BaseSetup {
   }
 
   function testCannotWithdrawGatewayInsufficientAmount() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
 
     string memory name = "name";

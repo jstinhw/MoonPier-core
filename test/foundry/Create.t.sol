@@ -5,7 +5,6 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {ERC721Presale} from "../../contracts/core/ERC721Presale.sol";
-import "forge-std/console2.sol";
 
 contract Create is BaseSetup {
   uint256 public downpaymentWETH = 1000;
@@ -19,7 +18,7 @@ contract Create is BaseSetup {
   }
 
   function testCreateCollection() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
@@ -105,7 +104,7 @@ contract Create is BaseSetup {
   }
 
   function testCannotCreateCollectionInvalidmToken() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
@@ -135,7 +134,7 @@ contract Create is BaseSetup {
   }
 
   function testCannotCreateCollectionExisting() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
@@ -165,7 +164,7 @@ contract Create is BaseSetup {
   }
 
   function testCreateCollectionDownPayment() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
@@ -204,7 +203,7 @@ contract Create is BaseSetup {
 
   function testCreateCollectionDownPaymentFuzz(uint256 joinAmount) public {
     vm.assume(joinAmount > 0 && joinAmount < 100 ether);
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
 

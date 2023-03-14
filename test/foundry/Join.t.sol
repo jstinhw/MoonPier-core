@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "forge-std/console2.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {WETH9Mocked} from "../../contracts/mocks/WETH9Mocked.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";

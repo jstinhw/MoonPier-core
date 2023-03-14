@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
-import "forge-std/console2.sol";
 import {Errors} from "../../contracts/libraries/Errors.sol";
 
 contract TestWETHGateway is BaseSetup {

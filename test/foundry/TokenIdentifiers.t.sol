@@ -18,7 +18,7 @@ contract TestTokenIdentifier is BaseSetup {
   }
 
   function testTokenIdentifier() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     assertEq(TokenIdentifiers.tokenDownpayment(id), 1000);
     assertEq(TokenIdentifiers.tokenIndex(id), 0);

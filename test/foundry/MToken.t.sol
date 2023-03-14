@@ -20,7 +20,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotMint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(alice);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -29,7 +29,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotMintFromCreator() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(creator);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -38,7 +38,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotBurn() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(creator);
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
@@ -47,7 +47,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testTransfer() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 amount = 10 ether;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
 
@@ -60,7 +60,7 @@ contract MTokenTest is BaseSetup {
   }
 
   function testCannotTransferTokenNotOwner() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 amount = 10 ether;
 
     vm.prank(alice);

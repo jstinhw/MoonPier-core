@@ -16,8 +16,6 @@ import {IFeeManager} from "../interfaces/IFeeManager.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
 
-import "forge-std/console2.sol";
-
 /**
  * @title ERC721 contract for presale
  * @author MoonPier

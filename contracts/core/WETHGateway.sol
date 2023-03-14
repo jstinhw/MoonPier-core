@@ -14,7 +14,6 @@ import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
 import {Errors} from "../libraries/Errors.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {TokenIdentifiers} from "./TokenIdentifiers.sol";
-import "forge-std/console2.sol";
 
 /**
  * @title WETHGateway contract

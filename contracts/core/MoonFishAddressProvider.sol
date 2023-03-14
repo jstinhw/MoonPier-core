@@ -4,7 +4,6 @@ pragma solidity 0.8.17;
 import {OwnableUpgradeable} from "openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
-import "forge-std/console2.sol";
 
 /**
  * @title MoonFishAddressProvider contract

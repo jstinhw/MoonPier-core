@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
-import "forge-std/console2.sol";
 import {Errors} from "../../contracts/libraries/Errors.sol";
 import {IERC1155Receiver} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {IERC165} from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";

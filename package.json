@@ -13,7 +13,9 @@
     "lint:sol": "prettier --write \"contracts/**/*.sol\"",
     "prepare": "husky install",
     "coverage": "forge coverage",
-    "coverage:report": "forge coverage --report lcov"
+    "coverage:report": "forge coverage --report lcov",
+    "deploy:anvil": "forge script script/moonfish.s.sol:DeployScript --rpc-url http://127.0.0.1:8545 --broadcast -vvvv",
+    "address:anvil": "ts-node script/getAddress.ts"
   },
   "author": "MoonPier",
   "license": "Apache-2.0",

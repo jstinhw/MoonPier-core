@@ -20,7 +20,7 @@ contract Premint is BaseSetup {
   }
 
   function testPremint() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     string memory name = "name";
@@ -65,7 +65,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintNotCreate() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     // alice join
@@ -80,7 +80,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintNoJoin() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";
@@ -114,7 +114,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintAfterLeave() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     uint256 mTokenAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
@@ -157,7 +157,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintFromMoonFishNotCreate() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
     // alice join
@@ -172,7 +172,7 @@ contract Premint is BaseSetup {
   }
 
   function testCannotPremintFromMoonFishNoJoin() public {
-    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 14) | 0x3E8;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     string memory name = "name";
     string memory symbol = "NM";

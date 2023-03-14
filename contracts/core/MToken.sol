@@ -19,6 +19,7 @@ import {IMToken} from "../interfaces/IMToken.sol";
 contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
   address internal immutable underlyingAsset;
   address internal immutable moonfish;
+  mapping(uint256 => uint256) public totalSupply;
 
   constructor(address _underlyingAsset, address _moonFish) ERC1155("") {
     underlyingAsset = _underlyingAsset;
@@ -31,10 +32,12 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
   }
 
   function mint(address to, uint256 id, uint256 amount) external override(IMToken) onlyMoonFish {
+    totalSupply[id] += amount;
     _mint(to, id, amount, "");
   }
 
   function burn(address from, uint256 id, uint256 amount) public override(ERC1155Burnable, IMToken) onlyMoonFish {
+    totalSupply[id] -= amount;
     _burn(from, id, amount);
     IERC20(underlyingAsset).transferFrom(address(this), from, amount);
   }

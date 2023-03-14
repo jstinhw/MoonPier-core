@@ -7,7 +7,6 @@ import {ReentrancyGuard} from "openzeppelin-contracts/contracts/security/Reentra
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {IMToken} from "../interfaces/IMToken.sol";
 import {Errors} from "../libraries/Errors.sol";
-import "forge-std/console2.sol";
 import {TokenIdentifiers} from "../core/TokenIdentifiers.sol";
 import {Events} from "../libraries/Events.sol";
 
