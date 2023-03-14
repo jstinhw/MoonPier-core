@@ -12,7 +12,6 @@ import {DataTypes} from "../libraries/DataTypes.sol";
 import {CollectionLogic} from "../libraries/CollectionLogic.sol";
 import {JoinLogic} from "../libraries/JoinLogic.sol";
 import {TokenIdentifiers} from "./TokenIdentifiers.sol";
-import "forge-std/console2.sol";
 import {Events} from "../libraries/Events.sol";
 
 /**

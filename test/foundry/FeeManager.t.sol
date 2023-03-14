@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
-import "forge-std/console2.sol";
 
 contract TestFeeManager is BaseSetup {
   uint256 public downpaymentWETH = 1000;

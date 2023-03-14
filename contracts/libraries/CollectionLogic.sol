@@ -14,8 +14,6 @@ import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
 import {Events} from "../libraries/Events.sol";
 
-import "forge-std/console2.sol";
-
 library CollectionLogic {
   using TokenIdentifiers for uint256;
 

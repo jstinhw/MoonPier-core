@@ -11,6 +11,9 @@ test = 'test/foundry'
 [profile.test]
 src = 'test/foundry'
 
+[rpc_endpoints]
+anvil = "${ANVIL_RPC_URL}"
+
 [fmt]
 line_length = 120
 tab_width = 2

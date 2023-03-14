@@ -48,25 +48,27 @@ contract BaseSetup is Test {
     moonFishAddressProviderProxy = MoonFishAddressProvider(
       address(new MoonFishProxy(address(moonFishAddressProvider), ""))
     );
-
     MoonFishAddressProvider(address(moonFishAddressProviderProxy)).initialize();
 
+    // deploy fee manager
     feeManager = new FeeManager(1000, admin);
+
+    // deploy erc721presale implementation
     erc721Presale = new ERC721Presale(address(moonFishAddressProviderProxy));
+
+    // deploy moonfish
     moonfish = new MoonFish(address(erc721Presale));
     moonfishproxy = MoonFish(address(new MoonFishProxy(address(moonfish), "")));
-
     MoonFish(address(moonfishproxy)).initialize();
     moonfishproxy.setPresaleFee(1000);
 
+    // deploy mtoken
     mtoken = new MToken(address(weth), address(moonfishproxy));
 
+    // address provider set moonFish and feeManager
     moonFishAddressProviderProxy.setMoonFish(address(moonfishproxy));
     moonFishAddressProviderProxy.setFeeManager(address(feeManager));
     vm.stopPrank();
-    // wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
-
-    // moonfishproxy.addReserve(address(weth), downpaymentWETH, address(mtoken));
   }
 
   function testSetup() public {
