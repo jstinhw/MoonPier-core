@@ -13,6 +13,7 @@ import {ERC721Presale} from "../core/ERC721Presale.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
 import {Events} from "../libraries/Events.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 library CollectionLogic {
   using TokenIdentifiers for uint256;
@@ -71,8 +72,10 @@ library CollectionLogic {
     }
     uint256 fee = (maxDownpayment * presaleFee) / 10000;
 
-    IMToken(mToken).safeTransferFrom(mToken, feeTo, id, fee, "");
-    IMToken(mToken).safeTransferFrom(mToken, msg.sender, id, maxDownpayment - fee, "");
+    IMToken(mToken).safeTransferFrom(mToken, address(this), id, maxDownpayment, "");
+    IMToken(mToken).burn(address(this), id, maxDownpayment);
+    IERC20(reserve).transferFrom(address(this), feeTo, fee);
+    IERC20(reserve).transferFrom(address(this), msg.sender, maxDownpayment - fee);
 
     emit Events.CollectionCreated(reserve, msg.sender, id, address(deployed));
   }

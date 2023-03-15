@@ -23,6 +23,8 @@ contract Premint is BaseSetup {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     uint256 joinAmount = 1 ether;
+    uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
+
     string memory name = "name";
     string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
@@ -50,8 +52,8 @@ contract Premint is BaseSetup {
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
 
-    uint256 expectedFee = (joinAmount * 1000) / 10000;
-    uint256 expectedPrice = joinAmount - expectedFee;
+    uint256 expectedFee = (premintedAmount * 1000) / 10000;
+    uint256 expectedPrice = premintedAmount - expectedFee;
     // alice premint
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);

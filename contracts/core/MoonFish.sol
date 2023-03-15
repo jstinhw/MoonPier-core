@@ -4,6 +4,8 @@ pragma solidity 0.8.17;
 import {ReentrancyGuardUpgradeable} from "openzeppelin-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {IERC1155ReceiverUpgradeable} from "openzeppelin-upgradeable/contracts/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import {ERC1155Upgradeable} from "openzeppelin-upgradeable/contracts/token/ERC1155/ERC1155Upgradeable.sol";
+import {ERC1155HolderUpgradeable} from "openzeppelin-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
+
 import {OwnableUpgradeable} from "openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 
@@ -19,7 +21,13 @@ import {Events} from "../libraries/Events.sol";
  * @author MoonPier
  * @notice MoonFish is a contract that allows users to join and leave preminted collections
  */
-contract MoonFish is UUPSUpgradeable, IMoonFish, ReentrancyGuardUpgradeable, OwnableUpgradeable {
+contract MoonFish is
+  UUPSUpgradeable,
+  IMoonFish,
+  ReentrancyGuardUpgradeable,
+  OwnableUpgradeable,
+  ERC1155HolderUpgradeable
+{
   using TokenIdentifiers for uint256;
 
   uint256 internal _presaleFee;
