@@ -5,6 +5,7 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {ERC721Presale} from "../../contracts/core/ERC721Presale.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract Create is BaseSetup {
   uint256 public downpaymentWETH = 1000;
@@ -169,11 +170,11 @@ contract Create is BaseSetup {
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
 
-    string memory name = "name";
-    string memory symbol = "NM";
+    // string memory name = "name";
+    // string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
-      name: name,
-      symbol: symbol,
+      name: "name",
+      symbol: "NM",
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -194,11 +195,16 @@ contract Create is BaseSetup {
 
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
-    vm.prank(creator);
+    vm.startPrank(creator);
+    uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     moonfishproxy.createCollection(address(weth), id, config);
+
+    uint256 afterBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 afterBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
-    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
-    assertEq(mtoken.balanceOf(admin, id), expectedFee);
+    assertEq(afterBalanceCreator - beforeBalanceCreator, expectedDownpayment);
+    assertEq(afterBalanceAdmin - beforeBalanceAdmin, expectedFee);
   }
 
   function testCreateCollectionDownPaymentFuzz(uint256 joinAmount) public {
@@ -207,11 +213,11 @@ contract Create is BaseSetup {
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
     uint256 downpayment = joinAmount - premintedAmount;
 
-    string memory name = "name";
-    string memory symbol = "NM";
+    // string memory name = "name";
+    // string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
-      name: name,
-      symbol: symbol,
+      name: "name",
+      symbol: "NM",
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -232,10 +238,17 @@ contract Create is BaseSetup {
 
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
-    vm.prank(creator);
+
+    vm.startPrank(creator);
+    uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     moonfishproxy.createCollection(address(weth), id, config);
+
+    uint256 afterBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 afterBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
+
     assertEq(mtoken.balanceOf(alice, id), premintedAmount);
-    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
-    assertEq(mtoken.balanceOf(admin, id), expectedFee);
+    assertEq(afterBalanceCreator - beforeBalanceCreator, expectedDownpayment);
+    assertEq(afterBalanceAdmin - beforeBalanceAdmin, expectedFee);
   }
 }

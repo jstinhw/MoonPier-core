@@ -6,6 +6,7 @@ import {WETH9Mocked} from "../../contracts/mocks/WETH9Mocked.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {Errors} from "../../contracts/libraries/Errors.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract LeaveTest is BaseSetup {
   uint256 public downpaymentWETH = 1000;
@@ -69,11 +70,9 @@ contract LeaveTest is BaseSetup {
     wethgateway.joinETH{value: amount}(id);
 
     // creator create collection
-    string memory name = "name";
-    string memory symbol = "NM";
     DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
-      name: name,
-      symbol: symbol,
+      name: "name",
+      symbol: "NM",
       fundsReceiver: creator,
       maxSupply: 100,
       maxAmountPerAddress: 1,
@@ -88,11 +87,13 @@ contract LeaveTest is BaseSetup {
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000
     });
+    uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);
 
-    uint256 expectedFee = (downpayment * 1000) / 10000;
-    uint256 expectedDownpayment = downpayment - expectedFee;
+    // uint256 expectedFee = (downpayment * 1000) / 10000;
+    uint256 expectedDownpayment = downpayment - (downpayment * 1000) / 10000;
     // leave before creator create collection
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
@@ -100,10 +101,12 @@ contract LeaveTest is BaseSetup {
     wethgateway.leaveETH(id, mTokenAmount, alice);
     uint256 ethAfter = address(alice).balance;
 
+    uint256 afterBalanceCreator = IERC20(address(weth)).balanceOf(creator);
+    uint256 afterBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     assertEq(ethAfter - ethBefore, mTokenAmount);
     assertEq(mtoken.balanceOf(alice, id), 0);
-    assertEq(mtoken.balanceOf(creator, id), expectedDownpayment);
-    assertEq(mtoken.balanceOf(admin, id), expectedFee);
+    assertEq(afterBalanceCreator - beforeBalanceCreator, expectedDownpayment);
+    assertEq(afterBalanceAdmin - beforeBalanceAdmin, (downpayment * 1000) / 10000);
   }
 
   function testCannotLeaveNoReserve() public {
