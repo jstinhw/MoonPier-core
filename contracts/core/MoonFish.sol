@@ -38,7 +38,6 @@ contract MoonFish is
   mapping(uint256 => address) internal _reservesList;
 
   mapping(uint256 => DataTypes.CollectionData) internal _collections;
-  mapping(address => mapping(address => uint256)) internal _presaleMinted;
 
   constructor(address _erc721presaleimpl) initializer {
     erc721implementation = _erc721presaleimpl;
