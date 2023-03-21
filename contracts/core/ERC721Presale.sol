@@ -186,6 +186,14 @@ contract ERC721Presale is
     _mint(to, amount);
   }
 
+  function getMinted(address minter) external view returns (uint256) {
+    return _numberMinted(minter);
+  }
+
+  function getPresaleTotalAmount() external view returns (uint256) {
+    return _presaleTotalAmount;
+  }
+
   function getCollectionConfig() external view override returns (DataTypes.CollectionConfig memory) {
     return _collectionConfig;
   }
