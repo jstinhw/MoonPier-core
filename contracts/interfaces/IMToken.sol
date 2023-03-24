@@ -24,4 +24,11 @@ interface IMToken is IERC1155 {
    * @dev Returns the underlying asset address
    */
   function getUnderlyingAsset() external view returns (address);
+
+  /**
+   * @dev Returns the moonfish uri
+   * @param id The id of the token
+   * @return The uri of the token
+   */
+  function uri(uint256 id) external view returns (string memory);
 }
