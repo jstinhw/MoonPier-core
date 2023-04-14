@@ -160,8 +160,8 @@ contract ERC721Presale is
     if (_whitelistMintedAmount[_msgSender()] + amount > maxAmount) {
       revert Errors.ExceedWhitelistAvailableAmount();
     }
-    _mint(_msgSender(), amount);
     _whitelistMintedAmount[_msgSender()] = _whitelistMintedAmount[_msgSender()] + amount;
+    _mint(_msgSender(), amount);
   }
 
   function presaleMint(address to, uint256 amount) external override onlyMoonFish {
@@ -199,9 +199,9 @@ contract ERC721Presale is
   }
 
   function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    // if (!_exists(tokenId)) {
-    //   revert IERC721AUpgradeable.URIQueryForNonexistentToken();
-    // }
+    if (!_exists(tokenId)) {
+      revert Errors.TokenNotExist();
+    }
     return bytes(_presalebaseURI).length != 0 ? string(abi.encodePacked(_presalebaseURI, _toString(tokenId))) : "";
   }
 
