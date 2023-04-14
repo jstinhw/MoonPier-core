@@ -8,8 +8,6 @@ import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/
 import {IERC1155Receiver} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 
-import "forge-std/console2.sol";
-
 contract MTokenTest is BaseSetup {
   uint256 public downpaymentWETH = 1000;
 
@@ -89,6 +87,5 @@ contract MTokenTest is BaseSetup {
   function testGetTokenURI() public {
     IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
     uint256 tokenId = 1;
-    console2.log(mToken.uri(tokenId));
   }
 }
