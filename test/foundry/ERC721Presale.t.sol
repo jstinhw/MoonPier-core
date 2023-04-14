@@ -910,12 +910,45 @@ contract ERC721PresaleTest is BaseSetup {
     Utils.Proof memory merkle = utils.getMerkleTree(0);
     moonfishproxy.createCollection(address(weth), id, config);
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    erc721presale.mint{value: 3 ether}(1);
 
     assertEq(erc721presale.tokenURI(0), "");
 
     erc721presale.setMerkleRoot(merkle.root);
     erc721presale.setBaseURI("https://moonfish.art/");
     assertEq(erc721presale.tokenURI(0), "https://moonfish.art/0");
+  }
+
+  function testCannotGetURITokenNotExist() public {
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 10,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000
+    });
+
+    vm.startPrank(creator);
+    moonfishproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+
+    vm.expectRevert(Errors.TokenNotExist.selector);
+    erc721presale.tokenURI(0);
   }
 
   function testWithdraw() public {
