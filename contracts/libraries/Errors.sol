@@ -27,4 +27,5 @@ library Errors {
   error InvalidPresaleMintTime();
   error ExceedPresaleMaxAmount();
   error ExceedPresaleMaxAmountPerAddress();
+  error TokenNotExist();
 }

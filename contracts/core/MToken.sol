@@ -78,7 +78,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
     return super.supportsInterface(interfaceId);
   }
 
-  function generateSVG(uint256 id) private view returns (bytes memory) {
+  function generateSVG(uint256 id) private pure returns (bytes memory) {
     return
       bytes.concat(
         abi.encodePacked(
@@ -95,7 +95,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
       );
   }
 
-  function constructTokenURI(uint256 id) internal view returns (string memory) {
+  function constructTokenURI(uint256 id) internal pure returns (string memory) {
     string memory pageSVG = Base64.encode(bytes(generateSVG(id)));
     return
       string(
@@ -121,7 +121,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
       );
   }
 
-  function uri(uint256 id) public view override(ERC1155, IMToken) returns (string memory) {
+  function uri(uint256 id) public pure override(ERC1155, IMToken) returns (string memory) {
     return constructTokenURI(id);
   }
 }
