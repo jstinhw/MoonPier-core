@@ -9,7 +9,8 @@ import {FeeManager} from "../contracts/core/FeeManager.sol";
 import {MToken} from "../contracts/core/MToken.sol";
 import {TokenIdentifiers} from "../contracts/core/TokenIdentifiers.sol";
 import {WETHGateway} from "../contracts/core/WETHGateway.sol";
-import {WETH9Mocked} from "../contracts/mocks/WETH9Mocked.sol";
+// import {WETH9Mocked} from "../contracts/mocks/WETH9Mocked.sol";
+import {WETH9} from "../contracts/mocks/WETH9.sol";
 import {ERC721PresaleProxy} from "../contracts/core/ERC721PresaleProxy.sol";
 import {MoonFishProxy} from "../contracts/core/MoonFishProxy.sol";
 import {MoonFishAddressProviderProxy} from "../contracts/core/MoonFishAddressProviderProxy.sol";
@@ -42,7 +43,7 @@ contract DeployScript is Script {
     moonfishAddressProviderProxy.setMoonFish(address(moonfishproxy));
 
     // add weth reserve, mToken and gateway
-    WETH9Mocked weth = new WETH9Mocked();
+    WETH9 weth = new WETH9();
     MToken mtoken = new MToken(address(weth), address(moonfishproxy));
     moonfishproxy.addReserve(address(weth), address(mtoken));
     new WETHGateway(address(weth), address(moonfishproxy));
