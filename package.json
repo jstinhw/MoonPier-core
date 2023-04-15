@@ -15,8 +15,9 @@
     "coverage": "forge coverage",
     "coverage:report": "forge coverage --report lcov",
     "address:anvil": "ts-node script/getAddressAnvil.ts",
-    "address:sepolia": "ts-node script/getAddressSepolia.ts"
-
+    "address:sepolia": "ts-node script/getAddressSepolia.ts",
+    "deploy:anvil": "forge script script/moonfish.s.sol -f anvil --broadcast -vvv",
+    "deploy:sepolia": "forge script script/moonfishSepolia.s.sol -f sepolia --broadcast -vvv"
   },
   "author": "MoonPier",
   "license": "Apache-2.0",
