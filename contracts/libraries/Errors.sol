@@ -28,4 +28,5 @@ library Errors {
   error ExceedPresaleMaxAmount();
   error ExceedPresaleMaxAmountPerAddress();
   error TokenNotExist();
+  error CollectionNotPresale();
 }

@@ -41,6 +41,7 @@ library CollectionLogic {
       creator: msg.sender,
       name: config.name,
       symbol: config.symbol,
+      metadataUri: config.metadataUri,
       collectionConfig: DataTypes.CollectionConfig({
         fundsReceiver: config.fundsReceiver,
         maxSupply: config.maxSupply,
@@ -92,6 +93,9 @@ library CollectionLogic {
     DataTypes.CollectionData storage collectiondata = collections[id];
     if (collectiondata.collection == address(0)) {
       revert Errors.CollectionNotExist();
+    }
+    if (collectiondata.presalePrice == 0) {
+      revert Errors.CollectionNotPresale();
     }
 
     uint256 downpaymentRate = id.tokenDownpayment();

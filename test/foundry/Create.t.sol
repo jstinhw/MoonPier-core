@@ -38,7 +38,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -70,7 +71,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
@@ -97,7 +99,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
@@ -124,7 +127,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(admin);
     moonfishproxy.addReserve(address(weth), address(0));
@@ -154,7 +158,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -187,7 +192,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     uint256 expectedFee = (downpayment * 1000) / 10000;
@@ -230,7 +236,8 @@ contract Create is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     uint256 expectedFee = (downpayment * 1000) / 10000;

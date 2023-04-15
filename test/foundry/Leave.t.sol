@@ -85,7 +85,8 @@ contract LeaveTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
