@@ -22,12 +22,11 @@ library Events {
 
   /**
    * @dev Emitted when collection created.
-   * @param reserve The address of reserve token.
    * @param creator The address of collection creator.
    * @param id ID of premint collection.
    * @param collection The address of created collection.
    */
-  event CollectionCreated(address indexed reserve, address indexed creator, uint256 id, address collection);
+  event CollectionCreated(address indexed creator, uint256 indexed id, address indexed collection);
 
   /**
    * @notice Emitted when `user` premint collection.

@@ -78,7 +78,7 @@ library CollectionLogic {
     IERC20(reserve).transferFrom(address(this), feeTo, fee);
     IERC20(reserve).transferFrom(address(this), msg.sender, maxDownpayment - fee);
 
-    emit Events.CollectionCreated(reserve, msg.sender, id, address(deployed));
+    emit Events.CollectionCreated(msg.sender, id, address(deployed));
   }
 
   function premint(
