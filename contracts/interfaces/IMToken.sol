@@ -26,7 +26,7 @@ interface IMToken is IERC1155 {
   function getUnderlyingAsset() external view returns (address);
 
   /**
-   * @dev Returns the moonfish uri
+   * @dev Returns the moonpier uri
    * @param id The id of the token
    * @return The uri of the token
    */

@@ -13,8 +13,8 @@ contract Create is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -39,12 +39,12 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    address collectionAddress = moonfishproxy.getCollectionData(id).collection;
+    moonpierproxy.createCollection(address(weth), id, config);
+    address collectionAddress = moonpierproxy.getCollectionData(id).collection;
 
     assertEq(ERC721Presale(collectionAddress).name(), name);
     assertEq(ERC721Presale(collectionAddress).symbol(), symbol);
@@ -72,11 +72,11 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
-    moonfish.createCollection(address(weth), id, config);
+    moonpier.createCollection(address(weth), id, config);
   }
 
   function testCannotCreateCollectionNotCreator() public {
@@ -100,11 +100,11 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.expectRevert("Create: not creator");
     vm.prank(creator);
-    moonfish.createCollection(address(weth), id, config);
+    moonpier.createCollection(address(weth), id, config);
   }
 
   function testCannotCreateCollectionInvalidmToken() public {
@@ -128,14 +128,14 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(admin);
-    moonfishproxy.addReserve(address(weth), address(0));
+    moonpierproxy.addReserve(address(weth), address(0));
 
     vm.prank(creator);
     vm.expectRevert("Create: invalid reserve");
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
   }
 
   function testCannotCreateCollectionExisting() public {
@@ -159,14 +159,14 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     vm.expectRevert("Create: collection exists");
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
   }
 
   function testCreateCollectionDownPayment() public {
@@ -193,7 +193,7 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     uint256 expectedFee = (downpayment * 1000) / 10000;
@@ -204,7 +204,7 @@ contract Create is BaseSetup {
     vm.startPrank(creator);
     uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     uint256 afterBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 afterBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
@@ -237,7 +237,7 @@ contract Create is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     uint256 expectedFee = (downpayment * 1000) / 10000;
@@ -249,7 +249,7 @@ contract Create is BaseSetup {
     vm.startPrank(creator);
     uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     uint256 afterBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 afterBalanceAdmin = IERC20(address(weth)).balanceOf(admin);

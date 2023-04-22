@@ -14,8 +14,8 @@ contract LeaveTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -86,12 +86,12 @@ contract LeaveTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // uint256 expectedFee = (downpayment * 1000) / 10000;
     uint256 expectedDownpayment = downpayment - (downpayment * 1000) / 10000;
@@ -117,7 +117,7 @@ contract LeaveTest is BaseSetup {
 
     vm.startPrank(alice);
     vm.expectRevert("Leave: invalid reserve");
-    moonfishproxy.leave(address(1), id, mTokenAmount, alice);
+    moonpierproxy.leave(address(1), id, mTokenAmount, alice);
   }
 
   function testCannotLeaveWithZeroAmount() public {
@@ -167,9 +167,9 @@ contract LeaveTest is BaseSetup {
     vm.stopPrank();
 
     vm.prank(bob);
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert("Leave: amount cannot be zero");
-    moonfishproxy.leave(address(weth), id, mTokenAmount, alice);
+    moonpierproxy.leave(address(weth), id, mTokenAmount, alice);
   }
 
   function testCannotLeaveInsufficientAmount() public {
@@ -178,9 +178,9 @@ contract LeaveTest is BaseSetup {
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert(Errors.LeaveInsufficientBalance.selector);
-    moonfishproxy.leave(address(weth), id, amount, alice);
+    moonpierproxy.leave(address(weth), id, amount, alice);
   }
 
   function testCannotLeaveNonReceivedTo() public {

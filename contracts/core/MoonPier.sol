@@ -9,7 +9,7 @@ import {ERC1155HolderUpgradeable} from "openzeppelin-upgradeable/contracts/token
 import {OwnableUpgradeable} from "openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-import {IMoonFish} from "../interfaces/IMoonFish.sol";
+import {IMoonPier} from "../interfaces/IMoonPier.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {CollectionLogic} from "../libraries/CollectionLogic.sol";
 import {JoinLogic} from "../libraries/JoinLogic.sol";
@@ -17,13 +17,13 @@ import {TokenIdentifiers} from "./TokenIdentifiers.sol";
 import {Events} from "../libraries/Events.sol";
 
 /**
- * @title MoonFish contract
+ * @title MoonPier contract
  * @author MoonPier
- * @notice MoonFish is a contract that allows users to join and leave preminted collections
+ * @notice MoonPier is a contract that allows users to join and leave preminted collections
  */
-contract MoonFish is
+contract MoonPier is
   UUPSUpgradeable,
-  IMoonFish,
+  IMoonPier,
   ReentrancyGuardUpgradeable,
   OwnableUpgradeable,
   ERC1155HolderUpgradeable

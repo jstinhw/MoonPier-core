@@ -13,8 +13,8 @@ contract WithdrawTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -47,7 +47,7 @@ contract WithdrawTest is BaseSetup {
   //   wethgateway.joinETH{value: joinAmount}(id);
 
   //   vm.startPrank(creator);
-  //   moonfishproxy.createCollection(address(weth), id, config);
+  //   moonpierproxy.createCollection(address(weth), id, config);
   //   uint256 expectedWithdrawAmount = (downpayment * 1000) / 10000;
 
   //   // withdraw
@@ -80,13 +80,13 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // premint
     vm.startPrank(alice);
@@ -105,7 +105,7 @@ contract WithdrawTest is BaseSetup {
     assertEq(afterBalance - beforeBalance, expectedWithdrawAmount);
   }
 
-  // function testWithdrawDownPaymentFromMoonFish() public {
+  // function testWithdrawDownPaymentFromMoonPier() public {
   //   uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
   //   uint256 joinAmount = 1 ether;
   //   uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
@@ -134,12 +134,12 @@ contract WithdrawTest is BaseSetup {
   //   wethgateway.joinETH{value: joinAmount}(id);
 
   //   vm.startPrank(creator);
-  //   moonfishproxy.createCollection(address(weth), id, config);
+  //   moonpierproxy.createCollection(address(weth), id, config);
   //   uint256 expectedWithdrawAmount = (downpayment * 1000) / 10000;
 
-  //   withdraw from MoonFish directly
-  //   mtoken.setApprovalForAll(address(moonfishproxy), true);
-  //   moonfishproxy.withdraw(creator, id, expectedWithdrawAmount, creator);
+  //   withdraw from MoonPier directly
+  //   mtoken.setApprovalForAll(address(moonpierproxy), true);
+  //   moonpierproxy.withdraw(creator, id, expectedWithdrawAmount, creator);
   //   assertEq(IWETH(address(weth)).balanceOf(address(creator)), expectedWithdrawAmount);
   // }
 
@@ -166,7 +166,7 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     // join
     vm.prank(alice);
@@ -174,16 +174,16 @@ contract WithdrawTest is BaseSetup {
 
     // create
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
-    // withdraw from MoonFish directly
+    // withdraw from MoonPier directly
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
     vm.expectRevert("Create: not creator");
     wethgateway.withdraw(id, premintedAmount);
   }
 
-  function testShouldNotWithdrawFromMoonFish() public {
+  function testShouldNotWithdrawFromMoonPier() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
     uint256 joinAmount = 1 ether;
     uint256 premintedAmount = (joinAmount * (10000 - downpaymentWETH)) / 10000;
@@ -207,20 +207,20 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
-    // withdraw from MoonFish directly
+    // withdraw from MoonPier directly
     vm.startPrank(alice);
 
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert("Create: not creator");
-    moonfishproxy.withdraw(alice, id, downpayment, alice);
+    moonpierproxy.withdraw(alice, id, downpayment, alice);
   }
 
   function testCanNotWithdrawCollectionNotExist() public {
@@ -231,10 +231,10 @@ contract WithdrawTest is BaseSetup {
     vm.startPrank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
-    // withdraw from MoonFish directly
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    // withdraw from MoonPier directly
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert(Errors.CollectionNotExist.selector);
-    moonfishproxy.withdraw(alice, id, premintedAmount, creator);
+    moonpierproxy.withdraw(alice, id, premintedAmount, creator);
   }
 
   function testCannotWithdrawZeroAmount() public {
@@ -259,18 +259,18 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // withdraw
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert("Withdraw: amount cannot be zero");
-    moonfishproxy.withdraw(address(wethgateway), id, 0, creator);
+    moonpierproxy.withdraw(address(wethgateway), id, 0, creator);
   }
 
   function testCannotWithdrawInsufficientAmount() public {
@@ -295,18 +295,18 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // withdraw
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert(Errors.WithdrawInsufficientBalance.selector);
-    moonfishproxy.withdraw(address(wethgateway), id, joinAmount, creator);
+    moonpierproxy.withdraw(address(wethgateway), id, joinAmount, creator);
   }
 
   function testCannotWithdrawGatewayInsufficientAmount() public {
@@ -331,13 +331,13 @@ contract WithdrawTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // withdraw
     mtoken.setApprovalForAll(address(wethgateway), true);
@@ -376,7 +376,7 @@ contract WithdrawTest is BaseSetup {
 
   //   // withdraw
   //   vm.startPrank(address(mtoken));
-  //   moonfishproxy.createCollection(address(weth), id, config);
+  //   moonpierproxy.createCollection(address(weth), id, config);
   //   mtoken.setApprovalForAll(address(wethgateway), true);
   //   vm.expectRevert("Transfer failed.");
   //   wethgateway.withdraw(id, expectedWithdrawAmount);

@@ -12,8 +12,8 @@ contract JoinTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -41,7 +41,7 @@ contract JoinTest is BaseSetup {
     assertEq(mtoken.balanceOf(alice, id), mTokenAmount);
   }
 
-  function testJoinETHThroughMoonFish() public {
+  function testJoinETHThroughMoonPier() public {
     uint256 id = 0x3e8;
     uint256 amount = 10 ether;
     uint256 mTokenAmount = (amount * (10000 - downpaymentWETH)) / 10000;
@@ -49,8 +49,8 @@ contract JoinTest is BaseSetup {
     // join with id 1 and 10 eth
     vm.startPrank(alice);
     WETH9Mocked(payable(address(weth))).deposit{value: amount}();
-    WETH9Mocked(payable(address(weth))).transferFrom(alice, address(moonfishproxy), amount);
-    moonfishproxy.join(address(weth), id, amount, alice);
+    WETH9Mocked(payable(address(weth))).transferFrom(alice, address(moonpierproxy), amount);
+    moonpierproxy.join(address(weth), id, amount, alice);
     assertEq(weth.balanceOf(address(mtoken)), amount);
     assertEq(mtoken.balanceOf(alice, id), mTokenAmount);
   }
@@ -75,18 +75,18 @@ contract JoinTest is BaseSetup {
     // join with id 1 and 10 eth + 1 wei
     vm.startPrank(alice);
     WETH9Mocked(payable(address(weth))).deposit{value: amount}();
-    WETH9Mocked(payable(address(weth))).transferFrom(alice, address(moonfishproxy), amount);
-    moonfishproxy.join(address(weth), id, amount + 1, alice);
+    WETH9Mocked(payable(address(weth))).transferFrom(alice, address(moonpierproxy), amount);
+    moonpierproxy.join(address(weth), id, amount + 1, alice);
     assertEq(weth.balanceOf(address(mtoken)), amount);
     assertEq(mtoken.balanceOf(alice, id), mTokenAmount);
   }
 
-  function testFailJoinMoonFishWithoutWETH() public {
+  function testFailJoinMoonPierWithoutWETH() public {
     uint256 id = 0x3e8;
     uint256 amount = 10 ether;
 
     vm.prank(alice);
-    moonfishproxy.join(address(weth), id, amount, alice);
+    moonpierproxy.join(address(weth), id, amount, alice);
   }
 
   function testCannotjoinWithUnknowReserve() public {
@@ -97,7 +97,7 @@ contract JoinTest is BaseSetup {
     address unknownToken = address(0x1);
     vm.expectRevert("Join: invalid reserve");
     vm.prank(alice);
-    moonfishproxy.join(unknownToken, id, amount, alice);
+    moonpierproxy.join(unknownToken, id, amount, alice);
   }
 
   function testCannotJoinAfterCollectionCreated() public {
@@ -122,10 +122,10 @@ contract JoinTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     vm.expectRevert("Join: collection exists");
     vm.prank(alice);

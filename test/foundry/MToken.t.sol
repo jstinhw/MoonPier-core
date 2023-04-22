@@ -14,8 +14,8 @@ contract MTokenTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -23,8 +23,8 @@ contract MTokenTest is BaseSetup {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(alice);
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
-    vm.expectRevert("MToken: not from moonfish");
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
+    vm.expectRevert("MToken: not from moonpier");
     mToken.mint(alice, id, 1);
   }
 
@@ -32,8 +32,8 @@ contract MTokenTest is BaseSetup {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(creator);
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
-    vm.expectRevert("MToken: not from moonfish");
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
+    vm.expectRevert("MToken: not from moonpier");
     mToken.mint(creator, id, 1);
   }
 
@@ -41,8 +41,8 @@ contract MTokenTest is BaseSetup {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | 0x3E8;
 
     vm.startPrank(creator);
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
-    vm.expectRevert("MToken: not from moonfish");
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
+    vm.expectRevert("MToken: not from moonpier");
     mToken.burn(creator, id, 1);
   }
 
@@ -53,7 +53,7 @@ contract MTokenTest is BaseSetup {
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
     mToken.safeTransferFrom(alice, bob, id, 1 ether, "");
     assertEq(mToken.balanceOf(alice, id), mTokenAmount - 1 ether);
     assertEq(mToken.balanceOf(bob, id), 1 ether);
@@ -65,7 +65,7 @@ contract MTokenTest is BaseSetup {
 
     vm.prank(alice);
     wethgateway.joinETH{value: amount}(id);
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
 
     vm.expectRevert("ERC1155: caller is not token owner or approved");
     vm.prank(bob);
@@ -73,19 +73,19 @@ contract MTokenTest is BaseSetup {
   }
 
   function testgetUnderlying() public {
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
     assertEq(mToken.getUnderlyingAsset(), address(weth));
   }
 
   function testgetSupportsInterface() public {
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
     assertTrue(mToken.supportsInterface(type(IERC165Upgradeable).interfaceId));
     assertTrue(mToken.supportsInterface(type(IERC1155).interfaceId));
     assertTrue(mToken.supportsInterface(type(IERC1155Receiver).interfaceId));
   }
 
   function testGetTokenURI() public {
-    IMToken mToken = IMToken(moonfishproxy.getReserveData(address(weth)).mToken);
+    IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
     uint256 tokenId = 1;
   }
 }

@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import {DataTypes} from "../libraries/DataTypes.sol";
 
-interface IMoonFish {
+interface IMoonPier {
   /**
    * @notice Add reserve
    * @param underlying The underlying asset address of reserve token

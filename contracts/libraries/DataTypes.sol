@@ -5,7 +5,7 @@ pragma solidity 0.8.17;
 /**
  * @title DataTypes library
  * @author MoonPier
- * @notice A library that contains the data types used in the MoonFish protocol
+ * @notice A library that contains the data types used in the MoonPier protocol
  */
 library DataTypes {
   struct ReserveData {

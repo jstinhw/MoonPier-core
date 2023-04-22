@@ -4,60 +4,60 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {Errors} from "../../contracts/libraries/Errors.sol";
 
-contract TestMoonFishAddressProvider is BaseSetup {
+contract TestMoonPierAddressProvider is BaseSetup {
   uint256 public downpaymentWETH = 1000;
 
   function setUp() public override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
   function testUpgradeImplementation() public {
     vm.startPrank(admin);
-    moonFishAddressProviderProxy.upgradeTo(moonfishproxy.erc721implementation());
+    moonPierAddressProviderProxy.upgradeTo(moonpierproxy.erc721implementation());
   }
 
   function testCannotUpgradeImplementationNotAdmin() public {
-    address newImp = address(moonfishproxy.erc721implementation());
+    address newImp = address(moonpierproxy.erc721implementation());
     vm.expectRevert("Ownable: caller is not the owner");
     vm.startPrank(creator);
-    moonFishAddressProviderProxy.upgradeTo(newImp);
+    moonPierAddressProviderProxy.upgradeTo(newImp);
   }
 
   function testCannotUpgradeImplementationNotContract() public {
     vm.expectRevert();
     vm.startPrank(admin);
-    moonFishAddressProviderProxy.upgradeTo(admin);
+    moonPierAddressProviderProxy.upgradeTo(admin);
   }
 
   function testSetUp() public {
     BaseSetup.setUp();
   }
 
-  function testSetMoonFish() public {
+  function testSetMoonPier() public {
     vm.startPrank(admin);
-    moonFishAddressProviderProxy.setMoonFish(address(alice));
-    assertEq(moonFishAddressProviderProxy.getMoonFish(), address(alice));
+    moonPierAddressProviderProxy.setMoonPier(address(alice));
+    assertEq(moonPierAddressProviderProxy.getMoonPier(), address(alice));
   }
 
   function testSetFeeManager() public {
     vm.startPrank(admin);
-    moonFishAddressProviderProxy.setFeeManager(address(alice));
-    assertEq(moonFishAddressProviderProxy.getFeeManager(), address(alice));
+    moonPierAddressProviderProxy.setFeeManager(address(alice));
+    assertEq(moonPierAddressProviderProxy.getFeeManager(), address(alice));
   }
 
-  function testCannotSetMoonFishNotAdmin() public {
+  function testCannotSetMoonPierNotAdmin() public {
     vm.expectRevert("Ownable: caller is not the owner");
     vm.startPrank(alice);
-    moonFishAddressProviderProxy.setMoonFish(address(alice));
+    moonPierAddressProviderProxy.setMoonPier(address(alice));
   }
 
   function testCannotSetFeeManagerNotAdmin() public {
     vm.expectRevert("Ownable: caller is not the owner");
     vm.startPrank(alice);
-    moonFishAddressProviderProxy.setFeeManager(address(alice));
+    moonPierAddressProviderProxy.setFeeManager(address(alice));
   }
 }

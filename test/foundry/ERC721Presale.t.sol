@@ -19,8 +19,8 @@ contract ERC721PresaleTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -46,12 +46,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     erc721presale.mint{value: config.publicMintPrice}(1);
@@ -81,12 +81,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     vm.expectRevert(Errors.InsufficientEth.selector);
@@ -115,12 +115,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     vm.expectRevert(Errors.InvalidPublicMintTime.selector);
@@ -149,12 +149,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     vm.expectRevert(Errors.InvalidPublicMintTime.selector);
@@ -183,12 +183,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     erc721presale.mint{value: config.publicMintPrice}(1);
@@ -218,12 +218,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     address[] memory addresses = utils.createUsers(11);
     for (uint256 i = 1; i < addresses.length; i++) {
@@ -258,13 +258,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -297,13 +297,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -334,13 +334,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -371,13 +371,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -408,13 +408,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -445,13 +445,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -482,13 +482,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -519,13 +519,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -557,13 +557,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.setMerkleRoot(merkle.root);
     vm.stopPrank();
 
@@ -601,21 +601,21 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.prank(address(moonfishproxy));
+    vm.prank(address(moonpierproxy));
     erc721presale.presaleMint(alice, 1);
     assertEq(erc721presale.balanceOf(alice), 1);
     assertEq(erc721presale.ownerOf(0), alice);
     assertEq(erc721presale.getPresaleMintedAmount(alice), 1);
   }
 
-  function testCannotPresaleNotMoonFish() public {
+  function testCannotPresaleNotMoonPier() public {
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
 
     string memory name = "name";
@@ -638,14 +638,14 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.expectRevert(Errors.MoonFishOnly.selector);
+    vm.expectRevert(Errors.MoonPierOnly.selector);
     erc721presale.presaleMint(alice, 1);
   }
 
@@ -672,14 +672,14 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp + 1,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.prank(address(moonfishproxy));
+    vm.prank(address(moonpierproxy));
     vm.expectRevert(Errors.InvalidPresaleMintTime.selector);
     erc721presale.presaleMint(alice, 1);
   }
@@ -707,14 +707,14 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp - 1,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.prank(address(moonfishproxy));
+    vm.prank(address(moonpierproxy));
     vm.expectRevert(Errors.InvalidPresaleMintTime.selector);
     erc721presale.presaleMint(alice, 1);
   }
@@ -742,19 +742,19 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     address[] memory addresses = utils.createUsers(11);
     for (uint256 i = 1; i < addresses.length; i++) {
       vm.prank(addresses[i]);
       erc721presale.mint{value: config.publicMintPrice}(1);
     }
-    vm.prank(address(moonfishproxy));
+    vm.prank(address(moonpierproxy));
     vm.expectRevert(Errors.ExceedMaxSupply.selector);
     erc721presale.presaleMint(alice, 1);
   }
@@ -782,14 +782,14 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 2,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.startPrank(address(moonfishproxy));
+    vm.startPrank(address(moonpierproxy));
     erc721presale.presaleMint(alice, 2);
 
     vm.expectRevert(Errors.ExceedPresaleMaxAmount.selector);
@@ -819,14 +819,14 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
-    vm.startPrank(address(moonfishproxy));
+    vm.startPrank(address(moonpierproxy));
     erc721presale.presaleMint(alice, 1);
     vm.expectRevert(Errors.ExceedPresaleMaxAmountPerAddress.selector);
     erc721presale.presaleMint(alice, 1);
@@ -855,17 +855,17 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     erc721presale.mint{value: 6 ether}(2);
 
-    vm.startPrank(address(moonfishproxy));
+    vm.startPrank(address(moonpierproxy));
     vm.expectRevert(Errors.ExceedMaxAmountPerAddress.selector);
     erc721presale.presaleMint(alice, 1);
   }
@@ -892,13 +892,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     assertEq(erc721presale.getMerkleRoot(), "");
     // set Merkle root
@@ -928,20 +928,20 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
     Utils.Proof memory merkle = utils.getMerkleTree(0);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
     erc721presale.mint{value: 3 ether}(1);
 
-    assertEq(erc721presale.tokenURI(0), "https://moonfish.art/0");
+    assertEq(erc721presale.tokenURI(0), "https://moonpier.art/0");
 
     erc721presale.setMerkleRoot(merkle.root);
-    erc721presale.setBaseURI("https://moonfish.artie/");
-    assertEq(erc721presale.tokenURI(0), "https://moonfish.artie/0");
+    erc721presale.setBaseURI("https://moonpier.artie/");
+    assertEq(erc721presale.tokenURI(0), "https://moonpier.artie/0");
   }
 
   function testCannotGetURITokenNotExist() public {
@@ -966,12 +966,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.expectRevert(Errors.TokenNotExist.selector);
     erc721presale.tokenURI(0);
@@ -999,12 +999,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     erc721presale.mint{value: 3 ether}(1);
@@ -1045,12 +1045,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     erc721presale.mint{value: 3 ether}(1);
@@ -1080,12 +1080,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     erc721presale.mint{value: 3 ether}(1);
@@ -1117,12 +1117,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.prank(alice);
     erc721presale.mint{value: 3 ether}(1);
@@ -1157,13 +1157,13 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     Utils.Proof memory merkle = utils.getMerkleTree(0);
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     vm.expectRevert(Errors.CreatorOnly.selector);
@@ -1192,12 +1192,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     vm.expectRevert(Errors.CreatorOnly.selector);
@@ -1226,12 +1226,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     erc721presale.setCollectionConfig(
       DataTypes.CollectionConfig({
@@ -1274,12 +1274,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(alice);
     vm.expectRevert(Errors.CreatorOnly.selector);
@@ -1323,15 +1323,15 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.startPrank(admin);
-    erc721presale.upgradeTo(moonfishproxy.erc721implementation());
+    erc721presale.upgradeTo(moonpierproxy.erc721implementation());
   }
 
   function testCannotUpdateImplNotAdmin() public {
@@ -1356,12 +1356,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.startPrank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     vm.expectRevert(Errors.AdminOnly.selector);
     erc721presale.upgradeTo(alice);
@@ -1389,12 +1389,12 @@ contract ERC721PresaleTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
 
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
-    ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
+    moonpierproxy.createCollection(address(weth), id, config);
+    ERC721Presale erc721presale = ERC721Presale(moonpierproxy.getCollectionData(id).collection);
 
     assertTrue(erc721presale.supportsInterface(type(IERC165Upgradeable).interfaceId));
   }

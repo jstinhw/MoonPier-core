@@ -5,9 +5,9 @@ import {Test} from "forge-std/Test.sol";
 
 import {ERC721Presale} from "../../contracts/core/ERC721Presale.sol";
 import {FeeManager} from "../../contracts/core/FeeManager.sol";
-import {MoonFish} from "../../contracts/core/MoonFish.sol";
-import {MoonFishAddressProvider} from "../../contracts/core/MoonFishAddressProvider.sol";
-import {MoonFishProxy} from "../../contracts/core/MoonFishProxy.sol";
+import {MoonPier} from "../../contracts/core/MoonPier.sol";
+import {MoonPierAddressProvider} from "../../contracts/core/MoonPierAddressProvider.sol";
+import {MoonPierProxy} from "../../contracts/core/MoonPierProxy.sol";
 import {MToken} from "../../contracts/core/MToken.sol";
 import {WETHGateway} from "../../contracts/core/WETHGateway.sol";
 import {WETH9Mocked} from "../../contracts/mocks/WETH9Mocked.sol";
@@ -23,10 +23,10 @@ contract BaseSetup is Test {
 
   ERC721Presale internal erc721Presale;
   FeeManager internal feeManager;
-  MoonFish internal moonfish;
-  MoonFish internal moonfishproxy;
-  MoonFishAddressProvider internal moonFishAddressProvider;
-  MoonFishAddressProvider internal moonFishAddressProviderProxy;
+  MoonPier internal moonpier;
+  MoonPier internal moonpierproxy;
+  MoonPierAddressProvider internal moonPierAddressProvider;
+  MoonPierAddressProvider internal moonPierAddressProviderProxy;
   MToken internal mtoken;
   WETHGateway internal wethgateway;
 
@@ -44,30 +44,30 @@ contract BaseSetup is Test {
 
     // deploy Address Provider
     vm.startPrank(admin);
-    moonFishAddressProvider = new MoonFishAddressProvider(0);
-    moonFishAddressProviderProxy = MoonFishAddressProvider(
-      address(new MoonFishProxy(address(moonFishAddressProvider), ""))
+    moonPierAddressProvider = new MoonPierAddressProvider(0);
+    moonPierAddressProviderProxy = MoonPierAddressProvider(
+      address(new MoonPierProxy(address(moonPierAddressProvider), ""))
     );
-    MoonFishAddressProvider(address(moonFishAddressProviderProxy)).initialize();
+    MoonPierAddressProvider(address(moonPierAddressProviderProxy)).initialize();
 
     // deploy fee manager
     feeManager = new FeeManager(1000, admin);
 
     // deploy erc721presale implementation
-    erc721Presale = new ERC721Presale(address(moonFishAddressProviderProxy));
+    erc721Presale = new ERC721Presale(address(moonPierAddressProviderProxy));
 
-    // deploy moonfish
-    moonfish = new MoonFish(address(erc721Presale));
-    moonfishproxy = MoonFish(address(new MoonFishProxy(address(moonfish), "")));
-    MoonFish(address(moonfishproxy)).initialize();
-    moonfishproxy.setPresaleFee(1000);
+    // deploy moonpier
+    moonpier = new MoonPier(address(erc721Presale));
+    moonpierproxy = MoonPier(address(new MoonPierProxy(address(moonpier), "")));
+    MoonPier(address(moonpierproxy)).initialize();
+    moonpierproxy.setPresaleFee(1000);
 
     // deploy mtoken
-    mtoken = new MToken(address(weth), address(moonfishproxy));
+    mtoken = new MToken(address(weth), address(moonpierproxy));
 
-    // address provider set moonFish and feeManager
-    moonFishAddressProviderProxy.setMoonFish(address(moonfishproxy));
-    moonFishAddressProviderProxy.setFeeManager(address(feeManager));
+    // address provider set moonPier and feeManager
+    moonPierAddressProviderProxy.setMoonPier(address(moonpierproxy));
+    moonPierAddressProviderProxy.setFeeManager(address(feeManager));
     vm.stopPrank();
   }
 

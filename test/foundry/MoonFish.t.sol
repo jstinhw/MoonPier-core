@@ -10,28 +10,28 @@ contract TestWETHGateway is BaseSetup {
   function setUp() public override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
   function testGetReserveCount() public {
-    assertEq(moonfishproxy.getReserveCount(), 1);
+    assertEq(moonpierproxy.getReserveCount(), 1);
   }
 
   function testGetReserveUnderlying() public {
-    assertEq(moonfishproxy.getReserveUnderlyingFromId(0), address(weth));
+    assertEq(moonpierproxy.getReserveUnderlyingFromId(0), address(weth));
   }
 
   function testUpdateImpl() public {
     vm.startPrank(admin);
-    moonfishproxy.upgradeTo(moonfishproxy.erc721implementation());
+    moonpierproxy.upgradeTo(moonpierproxy.erc721implementation());
   }
 
   function testCannotUpdateImplNotAdmin() public {
     vm.startPrank(creator);
-    address newImp = moonfishproxy.erc721implementation();
+    address newImp = moonpierproxy.erc721implementation();
     vm.expectRevert("Ownable: caller is not the owner");
-    moonfishproxy.upgradeTo(newImp);
+    moonpierproxy.upgradeTo(newImp);
   }
 }
