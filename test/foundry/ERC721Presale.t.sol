@@ -45,7 +45,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -79,7 +80,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -112,7 +114,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -145,7 +148,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -178,7 +182,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -212,7 +217,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -251,7 +257,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -289,7 +296,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -325,7 +333,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -361,7 +370,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -397,7 +407,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -433,7 +444,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -469,7 +481,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -505,7 +518,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -542,7 +556,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -585,7 +600,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -621,7 +637,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -654,7 +671,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp + 1,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -688,7 +706,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp - 1
+      presaleEndTime: block.timestamp - 1,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -722,7 +741,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -761,7 +781,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 2,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -797,7 +818,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -832,7 +854,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.stopPrank();
     vm.prank(creator);
@@ -868,7 +891,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -903,7 +927,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -912,11 +937,11 @@ contract ERC721PresaleTest is BaseSetup {
     ERC721Presale erc721presale = ERC721Presale(moonfishproxy.getCollectionData(id).collection);
     erc721presale.mint{value: 3 ether}(1);
 
-    assertEq(erc721presale.tokenURI(0), "");
+    assertEq(erc721presale.tokenURI(0), "https://moonfish.art/0");
 
     erc721presale.setMerkleRoot(merkle.root);
-    erc721presale.setBaseURI("https://moonfish.art/");
-    assertEq(erc721presale.tokenURI(0), "https://moonfish.art/0");
+    erc721presale.setBaseURI("https://moonfish.artie/");
+    assertEq(erc721presale.tokenURI(0), "https://moonfish.artie/0");
   }
 
   function testCannotGetURITokenNotExist() public {
@@ -940,7 +965,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -972,7 +998,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1017,7 +1044,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1051,7 +1079,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1087,7 +1116,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1126,7 +1156,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     Utils.Proof memory merkle = utils.getMerkleTree(0);
@@ -1160,7 +1191,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1193,7 +1225,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -1240,7 +1273,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1288,7 +1322,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);
@@ -1320,7 +1355,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.startPrank(creator);
@@ -1352,7 +1388,8 @@ contract ERC721PresaleTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     vm.prank(creator);

@@ -72,6 +72,7 @@ contract ERC721Presale is
     address creator,
     string memory name,
     string memory symbol,
+    string memory metadataUri,
     DataTypes.CollectionConfig calldata collectionConfig
   ) public initializerERC721A initializer {
     __ERC721A_init(name, symbol);
@@ -82,6 +83,7 @@ contract ERC721Presale is
     _setupRole(DEFAULT_CREATOR_ROLE, creator);
 
     _collectionConfig = collectionConfig;
+    _presalebaseURI = metadataUri;
   }
 
   function setCollectionConfig(DataTypes.CollectionConfig calldata config) external override onlyCreator {

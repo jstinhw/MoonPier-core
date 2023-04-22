@@ -42,7 +42,8 @@ contract Premint is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     // alice join
     vm.prank(alice);
@@ -101,7 +102,8 @@ contract Premint is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     // create create collection
@@ -138,7 +140,8 @@ contract Premint is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     // alice join
@@ -193,7 +196,8 @@ contract Premint is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
 
     // create create collection

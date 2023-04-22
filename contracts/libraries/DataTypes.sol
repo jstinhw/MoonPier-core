@@ -36,6 +36,7 @@ library DataTypes {
     uint256 presaleAmountPerWallet;
     uint256 presaleStartTime;
     uint256 presaleEndTime;
+    string metadataUri;
   }
 
   struct CollectionConfig {

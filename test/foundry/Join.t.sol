@@ -121,7 +121,8 @@ contract JoinTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(creator);
     moonfishproxy.createCollection(address(weth), id, config);

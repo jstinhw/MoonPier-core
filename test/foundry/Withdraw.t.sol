@@ -79,7 +79,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
@@ -164,7 +165,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     // join
     vm.prank(alice);
@@ -204,7 +206,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
@@ -255,7 +258,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
@@ -290,7 +294,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
@@ -325,7 +330,8 @@ contract WithdrawTest is BaseSetup {
       presalePrice: 1 ether,
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
-      presaleEndTime: block.timestamp + 1000
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonfish.art/"
     });
     vm.prank(alice);
     wethgateway.joinETH{value: joinAmount}(id);
