@@ -9,8 +9,6 @@ import {FeeManager} from "../contracts/core/FeeManager.sol";
 import {MToken} from "../contracts/core/MToken.sol";
 import {TokenIdentifiers} from "../contracts/core/TokenIdentifiers.sol";
 import {WETHGateway} from "../contracts/core/WETHGateway.sol";
-// import {WETH9Mocked} from "../contracts/mocks/WETH9Mocked.sol";
-import {WETH9} from "../contracts/mocks/WETH9.sol";
 import {ERC721PresaleProxy} from "../contracts/core/ERC721PresaleProxy.sol";
 import {MoonPierProxy} from "../contracts/core/MoonPierProxy.sol";
 import {MoonPierAddressProviderProxy} from "../contracts/core/MoonPierAddressProviderProxy.sol";
@@ -45,10 +43,10 @@ contract DeployScript is Script {
     moonpierAddressProviderProxy.setMoonPier(address(moonpierproxy));
 
     // add weth reserve, mToken and gateway
-    WETH9 weth = new WETH9{salt: salt}();
-    MToken mtoken = new MToken{salt: salt}(address(weth), address(moonpierproxy));
-    moonpierproxy.addReserve(address(weth), address(mtoken));
-    new WETHGateway{salt: salt}(address(weth), address(moonpierproxy));
+    address wmatic = address(0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889);
+    MToken mtoken = new MToken{salt: salt}(wmatic, address(moonpierproxy));
+    moonpierproxy.addReserve(wmatic, address(mtoken));
+    new WETHGateway{salt: salt}(wmatic, address(moonpierproxy));
 
     vm.stopBroadcast();
   }
