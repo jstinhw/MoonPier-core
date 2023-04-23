@@ -18,11 +18,6 @@ import {Events} from "../libraries/Events.sol";
 
 library JoinLogic {
   using TokenIdentifiers for uint256;
-  // event Join(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
-
-  // event Leave(address indexed reserve, address indexed user, uint256 amount, uint256 indexed id);
-
-  // event Withdraw(address indexed user, uint256 indexed id, uint256 indexed amount);
 
   modifier onlyCreator(uint256 id, address creator) {
     require(_isCreator(id, creator), "Create: not creator");
@@ -63,16 +58,16 @@ library JoinLogic {
     require(mToken != address(0), "Leave: invalid reserve");
     require(amount != 0, "Leave: amount cannot be zero");
 
-    uint256 downpayment = (amount * id.tokenDownpayment()) / (10000 - id.tokenDownpayment());
     uint256 withdrawAmount = amount;
 
-    uint256 balance = IMToken(mToken).balanceOf(to, id);
-
-    if (balance < withdrawAmount) {
+    if (IMToken(mToken).balanceOf(to, id) < withdrawAmount) {
       revert Errors.LeaveInsufficientBalance();
     }
     if (collections[id].collection == address(0)) {
-      withdrawAmount = amount + downpayment;
+      uint256 denominator = IMToken(mToken).totalSupply(id) - IMToken(mToken).balanceOf(mToken, id);
+
+      uint256 downpayment = (IMToken(mToken).balanceOf(mToken, id) * amount) / denominator;
+      withdrawAmount = withdrawAmount + downpayment;
       IMToken(mToken).safeTransferFrom(mToken, to, id, downpayment, "");
     }
 
@@ -80,33 +75,6 @@ library JoinLogic {
 
     emit Events.CollectionLeft(reserve, to, amount, id);
     return withdrawAmount;
-  }
-
-  function withdraw(
-    address gateway,
-    uint256 id,
-    uint256 amount,
-    address to,
-    mapping(address => DataTypes.ReserveData) storage reserves,
-    mapping(uint256 => DataTypes.CollectionData) storage collections
-  ) external onlyCreator(id, to) returns (uint256) {
-    DataTypes.CollectionData memory cData = collections[id];
-
-    if (cData.collection == address(0)) {
-      revert Errors.CollectionNotExist();
-    }
-    address reserve = cData.reserve;
-    address mToken = reserves[reserve].mToken;
-    require(amount != 0, "Withdraw: amount cannot be zero");
-
-    uint256 balance = IMToken(mToken).balanceOf(gateway, id);
-    if (balance < amount) {
-      revert Errors.WithdrawInsufficientBalance();
-    }
-    IMToken(mToken).burn(gateway, id, amount);
-
-    emit Events.CollectionWithdraw(gateway, to, id, amount);
-    return amount;
   }
 
   function _isCreator(uint256 _id, address _address) internal pure returns (bool) {

@@ -14,8 +14,8 @@ contract LeaveTest is BaseSetup {
   function setUp() public virtual override {
     BaseSetup.setUp();
     vm.startPrank(admin);
-    moonfishproxy.addReserve(address(weth), address(mtoken));
-    wethgateway = new WETHGateway(address(weth), address(moonfishproxy));
+    moonpierproxy.addReserve(address(weth), address(mtoken));
+    wethgateway = new WETHGateway(address(weth), address(moonpierproxy));
     vm.stopPrank();
   }
 
@@ -59,6 +59,48 @@ contract LeaveTest is BaseSetup {
     // assertEq(mtoken.balanceOf(address(mtoken), id), 0);
   }
 
+  function testleaveETHBeforeCollectionCreatedRatio() public {
+    // join with id 1 and 10 eth
+    uint256 downpaymentRatio = 999;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | downpaymentRatio;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpaymentRatio)) / 10000;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+
+    // leave before creator create collection
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    uint256 ethBefore = address(alice).balance;
+    wethgateway.leaveETH(id, mTokenAmount, alice);
+    uint256 ethAfter = address(alice).balance;
+
+    assertEq(ethAfter - ethBefore, amount);
+    assertEq(mtoken.balanceOf(alice, id), 0);
+    assertEq(mtoken.balanceOf(address(mtoken), id), 0);
+  }
+
+  function testleaveETHBeforeCollectionCreatedRatioFuzz(uint256 downpayment) public {
+    // join with id 1 and 10 eth
+    vm.assume(downpayment >= 0 && downpayment < 10000);
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | downpayment;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpayment)) / 10000;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+
+    // leave before creator create collection
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    uint256 ethBefore = address(alice).balance;
+    wethgateway.leaveETH(id, mTokenAmount, alice);
+    uint256 ethAfter = address(alice).balance;
+
+    assertEq(ethAfter - ethBefore, amount);
+    assertEq(mtoken.balanceOf(alice, id), 0);
+    assertEq(mtoken.balanceOf(address(mtoken), id), 0);
+  }
+
   function testleaveETHAfterCollectionCreated() public {
     // join with id 1 and 10 eth
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
@@ -86,12 +128,12 @@ contract LeaveTest is BaseSetup {
       presaleAmountPerWallet: 1,
       presaleStartTime: block.timestamp,
       presaleEndTime: block.timestamp + 1000,
-      metadataUri: "https://moonfish.art/"
+      metadataUri: "https://moonpier.art/"
     });
     uint256 beforeBalanceCreator = IERC20(address(weth)).balanceOf(creator);
     uint256 beforeBalanceAdmin = IERC20(address(weth)).balanceOf(admin);
     vm.prank(creator);
-    moonfishproxy.createCollection(address(weth), id, config);
+    moonpierproxy.createCollection(address(weth), id, config);
 
     // uint256 expectedFee = (downpayment * 1000) / 10000;
     uint256 expectedDownpayment = downpayment - (downpayment * 1000) / 10000;
@@ -117,7 +159,7 @@ contract LeaveTest is BaseSetup {
 
     vm.startPrank(alice);
     vm.expectRevert("Leave: invalid reserve");
-    moonfishproxy.leave(address(1), id, mTokenAmount, alice);
+    moonpierproxy.leave(address(1), id, mTokenAmount, alice);
   }
 
   function testCannotLeaveWithZeroAmount() public {
@@ -167,9 +209,9 @@ contract LeaveTest is BaseSetup {
     vm.stopPrank();
 
     vm.prank(bob);
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert("Leave: amount cannot be zero");
-    moonfishproxy.leave(address(weth), id, mTokenAmount, alice);
+    moonpierproxy.leave(address(weth), id, mTokenAmount, alice);
   }
 
   function testCannotLeaveInsufficientAmount() public {
@@ -178,9 +220,9 @@ contract LeaveTest is BaseSetup {
 
     vm.startPrank(alice);
     wethgateway.joinETH{value: amount}(id);
-    mtoken.setApprovalForAll(address(moonfishproxy), true);
+    mtoken.setApprovalForAll(address(moonpierproxy), true);
     vm.expectRevert(Errors.LeaveInsufficientBalance.selector);
-    moonfishproxy.leave(address(weth), id, amount, alice);
+    moonpierproxy.leave(address(weth), id, amount, alice);
   }
 
   function testCannotLeaveNonReceivedTo() public {

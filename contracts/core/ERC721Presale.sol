@@ -10,8 +10,8 @@ import {UUPSUpgradeable} from "openzeppelin-upgradeable/contracts/proxy/utils/UU
 import {IERC165Upgradeable} from "openzeppelin-upgradeable/contracts/interfaces/IERC165Upgradeable.sol";
 
 import {IERC721Presale} from "../interfaces/IERC721Presale.sol";
-import {IMoonFishAddressProvider} from "../interfaces/IMoonFishAddressProvider.sol";
-import {IMoonFish} from "../interfaces/IMoonFish.sol";
+import {IMoonPierAddressProvider} from "../interfaces/IMoonPierAddressProvider.sol";
+import {IMoonPier} from "../interfaces/IMoonPier.sol";
 import {IFeeManager} from "../interfaces/IFeeManager.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {Errors} from "../libraries/Errors.sol";
@@ -28,11 +28,11 @@ contract ERC721Presale is
   ReentrancyGuardUpgradeable,
   AccessControlUpgradeable
 {
-  // IMoonFish internal moonfish;
+  // IMoonPier internal moonpier;
   bytes32 public constant DEFAULT_CREATOR_ROLE = bytes32(uint256(0x01));
   address public immutable ADMIN;
   uint256 internal _presaleTotalAmount = 0;
-  IMoonFishAddressProvider internal immutable moonFishAddressProvider;
+  IMoonPierAddressProvider internal immutable moonPierAddressProvider;
 
   mapping(address => uint256) internal _whitelistMintedAmount;
   mapping(address => uint256) internal _presaleMintedAmount;
@@ -43,7 +43,7 @@ contract ERC721Presale is
   string internal _presalebaseURI;
 
   constructor(address addressProvider) initializer {
-    moonFishAddressProvider = IMoonFishAddressProvider(addressProvider);
+    moonPierAddressProvider = IMoonPierAddressProvider(addressProvider);
     ADMIN = msg.sender;
   }
 
@@ -61,9 +61,9 @@ contract ERC721Presale is
     _;
   }
 
-  modifier onlyMoonFish() {
-    if (msg.sender != moonFishAddressProvider.getMoonFish()) {
-      revert Errors.MoonFishOnly();
+  modifier onlyMoonPier() {
+    if (msg.sender != moonPierAddressProvider.getMoonPier()) {
+      revert Errors.MoonPierOnly();
     }
     _;
   }
@@ -100,10 +100,10 @@ contract ERC721Presale is
 
   function withdraw() external override onlyCreator {
     uint256 funds = address(this).balance;
-    (address payable feeRecipient, uint256 moonfishFee) = IFeeManager(moonFishAddressProvider.getFeeManager()).getFees(
+    (address payable feeRecipient, uint256 moonpierFee) = IFeeManager(moonPierAddressProvider.getFeeManager()).getFees(
       address(this)
     );
-    uint256 fee = (funds * moonfishFee) / 10000;
+    uint256 fee = (funds * moonpierFee) / 10000;
     (bool successFee, ) = feeRecipient.call{value: fee}("");
     if (!successFee) {
       revert Errors.WithdrawFeeFailed();
@@ -166,7 +166,7 @@ contract ERC721Presale is
     _mint(_msgSender(), amount);
   }
 
-  function presaleMint(address to, uint256 amount) external override onlyMoonFish {
+  function presaleMint(address to, uint256 amount) external override onlyMoonPier {
     if (_totalMinted() + amount > _collectionConfig.maxSupply) {
       revert Errors.ExceedMaxSupply();
     }

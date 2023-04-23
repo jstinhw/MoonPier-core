@@ -16,8 +16,11 @@
     "coverage:report": "forge coverage --report lcov",
     "address:anvil": "ts-node script/getAddressAnvil.ts",
     "address:sepolia": "ts-node script/getAddressSepolia.ts",
-    "deploy:anvil": "forge script script/moonfish.s.sol -f anvil --broadcast -vvv",
-    "deploy:sepolia": "forge script script/moonfishSepolia.s.sol -f sepolia --broadcast -vvv"
+    "address:mumbai": "ts-node script/getAddressMumbai.ts",
+    "deploy:anvil": "forge script script/moonpierAnvil.s.sol -f anvil --broadcast -vvv",
+    "deploy:sepolia": "forge script script/moonpierSepolia.s.sol -f sepolia --broadcast -vvv",
+    "deploy:mumbai": "forge script script/moonpierMumbai.s.sol -f mumbai --broadcast -vvv",
+    "deploy:polygon": "forge script script/moonpierPolygon.s.sol -f polygon --broadcast -vvv"
   },
   "author": "MoonPier",
   "license": "Apache-2.0",

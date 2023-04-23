@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-interface IMoonFishAddressProvider {
+interface IMoonPierAddressProvider {
   /**
-   * @notice Set MoonFish address
-   * @param moonFish MoonFish address
+   * @notice Set MoonPier address
+   * @param moonPier MoonPier address
    */
-  function setMoonFish(address moonFish) external;
+  function setMoonPier(address moonPier) external;
 
   /**
    * @notice Set FeeManager address
@@ -15,9 +15,9 @@ interface IMoonFishAddressProvider {
   function setFeeManager(address feeManager) external;
 
   /**
-   * @notice Get MoonFish address
+   * @notice Get MoonPier address
    */
-  function getMoonFish() external view returns (address);
+  function getMoonPier() external view returns (address);
 
   /**
    * @notice Get FeeManager address

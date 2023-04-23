@@ -14,7 +14,7 @@ library Errors {
   // erc721presale Errors
   error AdminOnly();
   error CreatorOnly();
-  error MoonFishOnly();
+  error MoonPierOnly();
   error WithdrawFundFailed();
   error WithdrawFeeFailed();
   error InsufficientEth();

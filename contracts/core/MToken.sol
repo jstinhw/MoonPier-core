@@ -28,25 +28,25 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
   using Strings for address;
 
   address internal immutable underlyingAsset;
-  address internal immutable moonfish;
+  address internal immutable moonpier;
   mapping(uint256 => uint256) public totalSupply;
 
-  constructor(address _underlyingAsset, address _moonFish) ERC1155("") {
+  constructor(address _underlyingAsset, address _moonPier) ERC1155("") {
     underlyingAsset = _underlyingAsset;
-    moonfish = _moonFish;
+    moonpier = _moonPier;
   }
 
-  modifier onlyMoonFish() {
-    require(_msgSender() == moonfish, "MToken: not from moonfish");
+  modifier onlyMoonPier() {
+    require(_msgSender() == moonpier, "MToken: not from moonpier");
     _;
   }
 
-  function mint(address to, uint256 id, uint256 amount) external override(IMToken) onlyMoonFish {
+  function mint(address to, uint256 id, uint256 amount) external override(IMToken) onlyMoonPier {
     totalSupply[id] += amount;
     _mint(to, id, amount, "");
   }
 
-  function burn(address from, uint256 id, uint256 amount) public override(ERC1155Burnable, IMToken) onlyMoonFish {
+  function burn(address from, uint256 id, uint256 amount) public override(ERC1155Burnable, IMToken) onlyMoonPier {
     totalSupply[id] -= amount;
     _burn(from, id, amount);
     IERC20(underlyingAsset).transferFrom(address(this), from, amount);
@@ -62,7 +62,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
     require(
       from == _msgSender() ||
         isApprovedForAll(from, _msgSender()) ||
-        (moonfish == _msgSender() && from == address(this)),
+        (moonpier == _msgSender() && from == address(this)),
       "ERC1155: caller is not token owner or approved"
     );
     _safeTransferFrom(from, to, id, amount, data);
