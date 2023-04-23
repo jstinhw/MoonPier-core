@@ -41,6 +41,19 @@ contract JoinTest is BaseSetup {
     assertEq(mtoken.balanceOf(alice, id), mTokenAmount);
   }
 
+  function testjoinWithOverDownpayment() public {
+    uint256 id = 0x2710;
+    uint256 amount = 10 ether;
+    uint expectedDownPayment = 9999;
+    uint256 mTokenAmount = (amount * (10000 - expectedDownPayment)) / 10000;
+
+    // join with id 1 and 10 eth
+    vm.prank(alice);
+    wethgateway.joinETH{value: amount}(id);
+    assertEq(weth.balanceOf(address(mtoken)), amount);
+    assertEq(mtoken.balanceOf(alice, id), mTokenAmount);
+  }
+
   function testJoinETHThroughMoonPier() public {
     uint256 id = 0x3e8;
     uint256 amount = 10 ether;

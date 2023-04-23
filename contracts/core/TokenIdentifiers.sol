@@ -23,7 +23,7 @@ library TokenIdentifiers {
   uint256 internal constant INDEX_MASK = ((uint256(1) << INDEX_BITS) - 1) ^ DOWNPAYMENT_MASK;
 
   function tokenDownpayment(uint256 _id) internal pure returns (uint256) {
-    return (_id & DOWNPAYMENT_MASK) > 10000 ? 10000 : (_id & DOWNPAYMENT_MASK);
+    return (_id & DOWNPAYMENT_MASK) > 9999 ? 9999 : (_id & DOWNPAYMENT_MASK);
   }
 
   function tokenIndex(uint256 _id) internal pure returns (uint256) {

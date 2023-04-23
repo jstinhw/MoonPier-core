@@ -100,8 +100,6 @@ library CollectionLogic {
 
     uint256 downpaymentRate = id.tokenDownpayment();
     IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
-    // uint256 balance = mtoken.balanceOf(msg.sender, id);
-    // uint256 presalePrice = collectiondata.presalePrice;
 
     if (
       mtoken.balanceOf(msg.sender, id) < ((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount

@@ -31,4 +31,11 @@ interface IMToken is IERC1155 {
    * @return The uri of the token
    */
   function uri(uint256 id) external view returns (string memory);
+
+  /**
+   * @dev Returns the total supply of the token
+   * @param id The id of the token
+   * @return The total supply of the token
+   */
+  function totalSupply(uint256 id) external view returns (uint256);
 }

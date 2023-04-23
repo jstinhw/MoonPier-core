@@ -59,6 +59,48 @@ contract LeaveTest is BaseSetup {
     // assertEq(mtoken.balanceOf(address(mtoken), id), 0);
   }
 
+  function testleaveETHBeforeCollectionCreatedRatio() public {
+    // join with id 1 and 10 eth
+    uint256 downpaymentRatio = 999;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | downpaymentRatio;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpaymentRatio)) / 10000;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+
+    // leave before creator create collection
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    uint256 ethBefore = address(alice).balance;
+    wethgateway.leaveETH(id, mTokenAmount, alice);
+    uint256 ethAfter = address(alice).balance;
+
+    assertEq(ethAfter - ethBefore, amount);
+    assertEq(mtoken.balanceOf(alice, id), 0);
+    assertEq(mtoken.balanceOf(address(mtoken), id), 0);
+  }
+
+  function testleaveETHBeforeCollectionCreatedRatioFuzz(uint256 downpayment) public {
+    // join with id 1 and 10 eth
+    vm.assume(downpayment >= 0 && downpayment < 10000);
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | downpayment;
+    uint256 amount = 10 ether;
+    uint256 mTokenAmount = (amount * (10000 - downpayment)) / 10000;
+
+    vm.startPrank(alice);
+    wethgateway.joinETH{value: amount}(id);
+
+    // leave before creator create collection
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    uint256 ethBefore = address(alice).balance;
+    wethgateway.leaveETH(id, mTokenAmount, alice);
+    uint256 ethAfter = address(alice).balance;
+
+    assertEq(ethAfter - ethBefore, amount);
+    assertEq(mtoken.balanceOf(alice, id), 0);
+    assertEq(mtoken.balanceOf(address(mtoken), id), 0);
+  }
+
   function testleaveETHAfterCollectionCreated() public {
     // join with id 1 and 10 eth
     uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 64) | 0x3E8;
