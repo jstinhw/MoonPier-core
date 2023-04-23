@@ -73,22 +73,6 @@ contract WETHGateway is IWETHGateway, ReentrancyGuard, ERC1155Holder {
     _moonPier.premint(id, amount, msg.sender);
   }
 
-  function withdraw(uint256 id, uint256 amount) external override nonReentrant {
-    IMToken mToken = IMToken(_moonPier.getReserveData(address(WETH)).mToken);
-    uint256 balance = mToken.balanceOf(msg.sender, id);
-    if (balance < amount) {
-      revert Errors.GatewayWithdrawInsufficientBalance();
-    }
-    mToken.safeTransferFrom(msg.sender, address(this), id, amount, "");
-    uint256 withdrawAmount = _moonPier.withdraw(address(this), id, amount, msg.sender);
-    WETH.withdraw(withdrawAmount);
-
-    (bool success, ) = (msg.sender).call{value: withdrawAmount}("");
-    if (!success) {
-      revert("Transfer failed.");
-    }
-  }
-
   function supportsInterface(bytes4 interfaceId) public view override(ERC1155Receiver) returns (bool) {
     return super.supportsInterface(interfaceId);
   }

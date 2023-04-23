@@ -77,33 +77,6 @@ library JoinLogic {
     return withdrawAmount;
   }
 
-  function withdraw(
-    address gateway,
-    uint256 id,
-    uint256 amount,
-    address to,
-    mapping(address => DataTypes.ReserveData) storage reserves,
-    mapping(uint256 => DataTypes.CollectionData) storage collections
-  ) external onlyCreator(id, to) returns (uint256) {
-    DataTypes.CollectionData memory cData = collections[id];
-
-    if (cData.collection == address(0)) {
-      revert Errors.CollectionNotExist();
-    }
-    address reserve = cData.reserve;
-    address mToken = reserves[reserve].mToken;
-    require(amount != 0, "Withdraw: amount cannot be zero");
-
-    uint256 balance = IMToken(mToken).balanceOf(gateway, id);
-    if (balance < amount) {
-      revert Errors.WithdrawInsufficientBalance();
-    }
-    IMToken(mToken).burn(gateway, id, amount);
-
-    emit Events.CollectionWithdraw(gateway, to, id, amount);
-    return amount;
-  }
-
   function _isCreator(uint256 _id, address _address) internal pure returns (bool) {
     return _address == _id.tokenCreator();
   }

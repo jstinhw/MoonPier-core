@@ -99,22 +99,19 @@ library CollectionLogic {
     }
 
     uint256 downpaymentRate = id.tokenDownpayment();
+    uint256 premintPrice = ((collectiondata.presalePrice * (10000 - downpaymentRate)) * amount) / 10000;
     IMToken mtoken = IMToken(reserves[collectiondata.reserve].mToken);
 
-    if (
-      mtoken.balanceOf(msg.sender, id) < ((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount
-    ) {
+    if (mtoken.balanceOf(msg.sender, id) < premintPrice) {
       revert Errors.PremintInsufficientBalance();
     }
-    uint256 fee = (((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount * presaleFee) / 10000;
-    mtoken.safeTransferFrom(msg.sender, feeTo, id, fee, "");
-    mtoken.safeTransferFrom(
-      msg.sender,
-      id.tokenCreator(),
-      id,
-      ((collectiondata.presalePrice * (10000 - downpaymentRate)) / 10000) * amount - fee,
-      ""
-    );
+    uint256 fee = (premintPrice * presaleFee) / 10000;
+
+    mtoken.safeTransferFrom(msg.sender, address(this), id, premintPrice, "");
+    mtoken.burn(address(this), id, premintPrice);
+    IERC20(collectiondata.reserve).transferFrom(address(this), feeTo, fee);
+    IERC20(collectiondata.reserve).transferFrom(address(this), id.tokenCreator(), premintPrice - fee);
+
     ERC721Presale(collectiondata.collection).presaleMint(to, amount);
     emit Events.CollectionPreminted(collectiondata.reserve, msg.sender, id, amount);
   }

@@ -86,6 +86,8 @@ contract MTokenTest is BaseSetup {
 
   function testGetTokenURI() public {
     IMToken mToken = IMToken(moonpierproxy.getReserveData(address(weth)).mToken);
-    uint256 tokenId = 1;
+    uint256 tokenId = (uint256(uint160(creator)) << 96) | (0x1 << 64) | 0x3E8;
+
+    string memory tokenURI = mToken.uri(tokenId);
   }
 }

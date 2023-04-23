@@ -52,16 +52,79 @@ contract Premint is BaseSetup {
     // create create collection
     vm.prank(creator);
     moonpierproxy.createCollection(address(weth), id, config);
+    uint256 wethAdminBefore = weth.balanceOf(admin);
+    uint256 wethCreatorBefore = weth.balanceOf(creator);
 
     uint256 expectedFee = (premintedAmount * 1000) / 10000;
     uint256 expectedPrice = premintedAmount - expectedFee;
+
     // alice premint
     vm.startPrank(alice);
     mtoken.setApprovalForAll(address(wethgateway), true);
     wethgateway.premint(id, 1);
-    assertEq(mtoken.balanceOf(creator, id), expectedPrice);
-    assertEq(mtoken.balanceOf(alice, id), 0);
-    assertEq(mtoken.balanceOf(admin, id), expectedFee);
+
+    uint256 wethAdminAfter = weth.balanceOf(admin);
+    uint256 wethCreatorAfter = weth.balanceOf(creator);
+
+    assertEq(weth.balanceOf(alice), 0);
+    assertEq(wethCreatorAfter - wethCreatorBefore, expectedPrice);
+    assertEq(wethAdminAfter - wethAdminBefore, expectedFee);
+
+    assertEq(IERC721(moonpierproxy.getCollectionData(id).collection).balanceOf(alice), 1);
+    assertEq(IERC721(moonpierproxy.getCollectionData(id).collection).ownerOf(0), alice);
+  }
+
+  function testPremintZero() public {
+    uint256 downpayment = 0;
+    uint256 id = (uint256(uint160(creator)) << 96) | (0x0 << 16) | downpayment;
+
+    uint256 joinAmount = 1 ether;
+    uint256 premintedAmount = (joinAmount * (10000 - downpayment)) / 10000;
+
+    string memory name = "name";
+    string memory symbol = "NM";
+    DataTypes.CreateCollectionParams memory config = DataTypes.CreateCollectionParams({
+      name: name,
+      symbol: symbol,
+      fundsReceiver: creator,
+      maxSupply: 100,
+      maxAmountPerAddress: 1,
+      publicMintPrice: 3 ether,
+      publicStartTime: block.timestamp,
+      publicEndTime: block.timestamp + 1000,
+      whitelistStartTime: block.timestamp,
+      whitelistEndTime: block.timestamp + 1000,
+      presaleMaxSupply: 10,
+      presalePrice: 1 ether,
+      presaleAmountPerWallet: 1,
+      presaleStartTime: block.timestamp,
+      presaleEndTime: block.timestamp + 1000,
+      metadataUri: "https://moonpier.art/"
+    });
+    // alice join
+    vm.prank(alice);
+    wethgateway.joinETH{value: joinAmount}(id);
+
+    // create create collection
+    vm.prank(creator);
+    moonpierproxy.createCollection(address(weth), id, config);
+    uint256 wethAdminBefore = weth.balanceOf(admin);
+    uint256 wethCreatorBefore = weth.balanceOf(creator);
+
+    uint256 expectedFee = (premintedAmount * 1000) / 10000;
+    uint256 expectedPrice = premintedAmount - expectedFee;
+
+    // alice premint
+    vm.startPrank(alice);
+    mtoken.setApprovalForAll(address(wethgateway), true);
+    wethgateway.premint(id, 1);
+
+    uint256 wethAdminAfter = weth.balanceOf(admin);
+    uint256 wethCreatorAfter = weth.balanceOf(creator);
+
+    assertEq(weth.balanceOf(alice), 0);
+    assertEq(wethCreatorAfter - wethCreatorBefore, expectedPrice);
+    assertEq(wethAdminAfter - wethAdminBefore, expectedFee);
 
     assertEq(IERC721(moonpierproxy.getCollectionData(id).collection).balanceOf(alice), 1);
     assertEq(IERC721(moonpierproxy.getCollectionData(id).collection).ownerOf(0), alice);

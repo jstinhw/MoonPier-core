@@ -95,15 +95,6 @@ contract MoonPier is
     );
   }
 
-  function withdraw(
-    address gateway,
-    uint256 id,
-    uint256 amount,
-    address to
-  ) external override nonReentrant returns (uint256) {
-    return JoinLogic.withdraw(gateway, id, amount, to, _reserves, _collections);
-  }
-
   function getReserveCount() external view override returns (uint8) {
     return _reserveCount;
   }

@@ -52,15 +52,6 @@ interface IMoonPier {
   function createCollection(address reserve, uint256 id, DataTypes.CreateCollectionParams calldata config) external;
 
   /**
-   * @notice Withdraw reserve token
-   * @param gateway The address of gateway
-   * @param id ID of the collection
-   * @param amount The amount of mToken to withdraw
-   * @param to The address to send reserve token
-   */
-  function withdraw(address gateway, uint256 id, uint256 amount, address to) external returns (uint256);
-
-  /**
    * @notice Get reserve count
    */
   function getReserveCount() external view returns (uint8);
