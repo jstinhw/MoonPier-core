@@ -14,7 +14,7 @@ import {MoonPierProxy} from "../contracts/core/MoonPierProxy.sol";
 import {MoonPierAddressProviderProxy} from "../contracts/core/MoonPierAddressProviderProxy.sol";
 
 contract DeployScript is Script {
-  bytes32 private salt = keccak256("MoonPier_v1");
+  bytes32 private salt = keccak256("MoonPier_v0.2");
 
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("MOONPIER_DEPLOYER_PRIVATE_KEY");
