@@ -88,7 +88,7 @@ contract MToken is ERC1155, ERC1155Burnable, ERC1155Holder, IMToken {
         abi.encodePacked(
           '<text x="15" y="220" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="7">',
           id.tokenCreator().toHexString(),
-          '</text><text x="15" y="240" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="14">Presale Pioneer</text><text x="15" y="285" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="14">id: ',
+          '</text><text x="15" y="240" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="14">Presale Pioneer</text><text x="15" y="283" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="7">id: ',
           id.tokenIndex().toString(),
           '</text><rect x="5" y="5" width="200" height="287" rx="15" fill="none" stroke="url(#myGradient)" stroke-width="4"/><text x="135" y="285" fill="url(#myGradient)" font-family="Euphemia UCAS" font-size="14">MoonPier</text></svg>'
         )
