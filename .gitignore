@@ -12,6 +12,9 @@ artifacts/
 #Hardhat plugin files
 typechain-types/
 
-broadcast/
+broadcast/moonpier.s.sol/
+broadcast/moonpierAnvil.s.sol/
+broadcast/moonpierMumbai.s.sol/
+broadcast/moonpierSepolia.s.sol/
 
 .env
